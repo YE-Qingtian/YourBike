@@ -7,9 +7,10 @@ import os
 import json
 from pprint import pprint
 import requests
-import time
+from datetime import datetime
 import pandas as pd
 from config import *
+import logging
 
 
 def insert_on_conflict_nothing(table, conn, keys, data_iter):
@@ -19,6 +20,7 @@ def insert_on_conflict_nothing(table, conn, keys, data_iter):
     return result.rowcount
 
 
+logging.basicConfig(filename='data.log', encoding='utf-8', level=logging.DEBUG)
 engine = create_engine(dblink)
 metadata = sqla.MetaData()
 station = sqla.Table(
@@ -51,12 +53,13 @@ json_struct = json.loads(response.text)
 df = pd.json_normalize(json_struct, sep='_')
 
 dfStations = df[
-    ['number','contract_name', 'name', "address", "position_lat", "position_lng", "banking", "bonus", "bike_stands",
+    ['number', 'contract_name', 'name', "address", "position_lat", "position_lng", "banking", "bonus", "bike_stands",
      "status"]]
 dfAvailability = df[['number', "last_update", 'available_bike_stands', 'available_bikes']]
 try:
     dfStations.to_sql("station", engine, index=False, if_exists='append')
 except:
-    print("Stations Table Already Exist.")
+    logging.debug("Stations Table Already Exist.")
 
 dfAvailability.to_sql("availability", engine, index=False, if_exists='append', method=insert_on_conflict_nothing)
+logging.info(f"{datetime.now():%Y-%m-%d %H:%M:%S} Update Success. Total records:{dfAvailability.shape[0]}")
