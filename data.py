@@ -20,6 +20,38 @@ def insert_on_conflict_nothing(table, conn, keys, data_iter):
     return result.rowcount
 
 
+def round_to_nearest_10min(timestamp):
+    dt = datetime.utcfromtimestamp(timestamp // 1000)  # Convert ms to seconds
+    rounded_minute = int(10 * round(float(dt.minute) / 10))
+    return int(datetime(dt.year, dt.month, dt.day, dt.hour, rounded_minute).timestamp())
+
+
+def parse_item(item):
+    rain = item.get('rain', {'1h': None}).get('1h')
+    snow = item.get('snow', {'1h': None}).get('1h')
+    weather_main = item['weather'][0]['main'] if 'weather' in item and item['weather'] else None
+    weather_description = item['weather'][0]['description'] if 'weather' in item and item['weather'] else None
+    return {
+        'dt': item.get('dt'),
+        'sunrise': item.get('sunrise'),
+        'sunset': item.get('sunset'),
+        'temp': item.get('temp'),
+        'feels_like': item.get('feels_like'),
+        'pressure': item.get('pressure'),
+        'humidity': item.get('humidity'),
+        'uvi': item.get('uvi'),
+        'clouds': item.get('clouds'),
+        'visibility': item.get('visibility'),
+        'wind_speed': item.get('wind_speed'),
+        'wind_deg': item.get('wind_deg'),
+        'wind_gust': item.get('wind_gust'),
+        'weather_main': weather_main,
+        'weather_description': weather_description,
+        'rain': rain,
+        'snow': snow
+    }
+
+
 logging.basicConfig(filename='data.log', encoding='utf-8', level=logging.DEBUG)
 engine = create_engine(dblink)
 metadata = sqla.MetaData()
@@ -63,3 +95,14 @@ except:
 
 dfAvailability.to_sql("availability", engine, index=False, if_exists='append', method=insert_on_conflict_nothing)
 logging.info(f"{datetime.now():%Y-%m-%d %H:%M:%S} Update Success. Total records:{dfAvailability.shape[0]}")
+
+dfAvailability['rounded_timestamp'] = dfAvailability['last_update'].apply(round_to_nearest_10min)
+unique_timestamps = dfAvailability['rounded_timestamp'].unique()
+parsed_data = []
+for i in unique_timestamps:
+    weatherResponse = requests.get(
+        f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={53}&lon={-6}&dt={i}&appid={OpenWeather_api_key}")
+    weatherJson = json.loads(weatherResponse.text)
+    parsed_data.append(*[parse_item(item) for item in weatherJson['data']])
+dfWeather = pd.DataFrame.from_dict(parsed_data)
+dfWeather.to_sql("weather", engine, index=False, if_exists='append', method=insert_on_conflict_nothing)
