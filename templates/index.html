@@ -8,7 +8,6 @@
     <title>Your Bike</title>
   </head>
   <body>
-    <div id="map"></div>
     <div class="container">
       <div class="navbar">
         <img
@@ -23,6 +22,7 @@
           placeholder="Insert Location"
         />
       </div>
+      <div id="map"></div>
 
       <div class="collapsible parent-collapsible">
         <div class="collapsible-header">
@@ -69,7 +69,10 @@
     </div>
 
     <footer>
-      <img src="{{url_for('static',filename='images/white_logo_footer.png')}}" alt="Logo Footer" />
+      <img
+        src="{{url_for('static',filename='images/white_logo_footer.png')}}"
+        alt="Logo Footer"
+      />
       <div class="final_text">
         <p>
           This Project is Part of the Software Engineering Module. 2024 &copy;
@@ -119,6 +122,6 @@
           : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
       })({ key: "AIzaSyBVA6mdrqjh6ZXWe5oJBt-Jac8uWOGhDE4", v: "weekly" });
     </script>
-    <script src="{{ url_for('static',filename='main.js') }}"></script>
+    <script src="./main.js"></script>
   </body>
 </html>
