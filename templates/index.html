@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}" />
+    <title>Your Bike</title>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div class="container">
+      <div class="navbar">
+        <img
+          src="{{ url_for('static',filename='images/yourbike-logo-zip-file/png/logo-no-background.png') }}"
+          alt="Webiste Logo"
+        />
+        <input type="datetime-local" id="userDate" name="userDate" />
+        <input
+          type="text"
+          name="location"
+          id="location"
+          placeholder="Insert Location"
+        />
+      </div>
+
+      <div class="collapsible parent-collapsible">
+        <div class="collapsible-header">
+          Information About Bike Stations & Weather Status
+        </div>
+        <div class="collapsible-content parent-content">
+          <div class="collapsible">
+            <div class="collapsible-header">Weather</div>
+            <div class="collapsible-content child-content">
+              <p>Date :</p>
+              <p>Temperature :</p>
+              <p>Pressure :</p>
+              <p>Humidity :</p>
+              <p>Status :</p>
+              <p>Description :</p>
+            </div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header">Station</div>
+            <div class="collapsible-content child-content">
+              <p>Number :</p>
+              <p>Address:</p>
+              <p>Latitude :</p>
+              <p>Longtitude :</p>
+              <p>Bike Stands :</p>
+            </div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header">Avaliability</div>
+            <div class="collapsible-content child-content">
+              <p>Bike Stand no. :</p>
+              <p>Last Updated :</p>
+              <p>Avaliable Bikes :</p>
+            </div>
+          </div>
+          <div class="collapsible">
+            <div class="collapsible-header">Grapgical Data</div>
+            <div class="collapsible-content child-content">
+              <p>Maybe Here a btn to view grapghs coming from backend</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <img src="{{url_for('static',filename='images/white_logo_footer.png')}}" alt="Logo Footer" />
+      <div class="final_text">
+        <p>
+          This Project is Part of the Software Engineering Module. 2024 &copy;
+        </p>
+      </div>
+      <p>
+        Team : <br />
+        Qingtian Ye <br />
+        Emad Nazzal <br />
+        Rupia
+      </p>
+    </footer>
+    <script>
+      ((g) => {
+        var h,
+          a,
+          k,
+          p = "The Google Maps JavaScript API",
+          c = "google",
+          l = "importLibrary",
+          q = "__ib__",
+          m = document,
+          b = window;
+        b = b[c] || (b[c] = {});
+        var d = b.maps || (b.maps = {}),
+          r = new Set(),
+          e = new URLSearchParams(),
+          u = () =>
+            h ||
+            (h = new Promise(async (f, n) => {
+              await (a = m.createElement("script"));
+              e.set("libraries", [...r] + "");
+              for (k in g)
+                e.set(
+                  k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()),
+                  g[k]
+                );
+              e.set("callback", c + ".maps." + q);
+              a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => (h = n(Error(p + " could not load.")));
+              a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+              m.head.append(a);
+            }));
+        d[l]
+          ? console.warn(p + " only loads once. Ignoring:", g)
+          : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
+      })({ key: "AIzaSyBVA6mdrqjh6ZXWe5oJBt-Jac8uWOGhDE4", v: "weekly" });
+    </script>
+    <script src="{{ url_for('static',filename='main.js') }}"></script>
+  </body>
+</html>
