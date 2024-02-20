@@ -52,7 +52,7 @@ def parse_item(item):
     }
 
 
-logging.basicConfig(filename='data.log', encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename='data.log', filemode='a', encoding='utf-8', level=logging.DEBUG)
 engine = create_engine(dblink)
 metadata = sqla.MetaData()
 station = sqla.Table(
