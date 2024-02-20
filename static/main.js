@@ -20,10 +20,29 @@ async function initMap() {
   });
 
   new google.maps.Marker({
-    position: {lat: 53.351757, lng: -6.279787 },
+    position: { lat: 53.351757, lng: -6.279787 },
     map,
     title: "Hello World!",
   });
 }
 
 initMap();
+
+// THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
+
+// const fetchDataFromDatabase = async () => {
+//   try {
+//     const response = await fetch("/stations"); // '/stations' in not yet ready for implementation.
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch data from the database");
+//     }
+//     const data = await response.json();
+//     // Process the data here
+//     console.log(data);
+//   } catch (error) {
+//     console.error("Error fetching data:", error.message);
+//   }
+// };
+
+// // Call the async function to fetch data when needed
+// fetchDataFromDatabase();
