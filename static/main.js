@@ -9,27 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-let map;
-
-async function initMap() {
-  const { Map } = await google.maps.importLibrary("maps");
-
-  map = new Map(document.getElementById("map"), {
-    zoom: 14,
-    center: new google.maps.LatLng(53.34511048273914, -6.267027506499677),
-  });
-
-  new google.maps.Marker({
-    position: { lat: 53.351757, lng: -6.279787 },
-    map,
-    title: "Hello World!",
-  });
-}
-
-initMap();
-
-// THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
-
 const fetchDataFromDatabase = async () => {
   try {
     const response = await fetch("/stations");
@@ -47,3 +26,53 @@ const fetchDataFromDatabase = async () => {
 
 // Call the async function to fetch stationsData when needed
 fetchDataFromDatabase();
+
+let map;
+
+async function initMap() {
+  const { Map } = await google.maps.importLibrary("maps");
+
+  map = new Map(document.getElementById("map"), {
+    zoom: 14,
+    center: new google.maps.LatLng(53.34511048273914, -6.267027506499677),
+  });
+
+  // Add marker for user's current location
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const userLatLng = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+      new google.maps.Marker({
+        position: userLatLng,
+        map: map,
+        title: "Your Location",
+      });
+    });
+  } else {
+    console.error("Geolocation is not supported by this browser.");
+  }
+
+  new google.maps.Marker({
+    position: { lat: 53.351757, lng: -6.279787 },
+    map: map,
+    title: "Hello World!",
+  });
+
+  const stationsData = await fetchDataFromDatabase();
+  if (stationsData) {
+    Object.values(stationsData).forEach((station) => {
+      // remeber that JSON data in not an array. that's why I kept getting errors
+      new google.maps.Marker({
+        position: { lat: station.position_lat, lng: station.position_lng },
+        map: map,
+        title: station.name,
+      });
+    });
+  }
+}
+
+initMap();
+
+// THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
