@@ -60,6 +60,15 @@ async function initMap() {
     title: "Hello World!",
   });
 
+  const circleMap = {
+    path: google.maps.SymbolPath.CIRCLE,
+    fillColor: "blue",
+    fillOpacity: 0.5,
+    strokeColor: "red",
+    strokeWeight: 2,
+    scale: 15, // Adjust the size of the circle
+  };
+
   const stationsData = await fetchDataFromDatabase();
   if (stationsData) {
     Object.values(stationsData).forEach((station) => {
@@ -68,6 +77,8 @@ async function initMap() {
         position: { lat: station.position_lat, lng: station.position_lng },
         map: map,
         title: station.name,
+        clickable: true,
+        icon: circleMap,
       });
     });
   }
