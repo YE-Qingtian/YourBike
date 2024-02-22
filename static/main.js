@@ -48,6 +48,10 @@ async function initMap() {
         position: userLatLng,
         map: map,
         title: "Your Location",
+        icon: {
+          url: "https://png.pngtree.com/png-clipart/20190924/original/pngtree-human-avatar-free-vector-png-image_4825373.jpg",
+          scaledSize: new google.maps.Size(50, 50), // Adjust size as needed
+        },
       });
     });
   } else {
