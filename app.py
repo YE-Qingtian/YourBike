@@ -16,7 +16,20 @@ def root():
 
 @app.route('/stations')
 def get_stations():
-    stations = pd.read_sql_table('station', engine)
+    query = """
+    SELECT s.*, last_update, a.available_bike_stands, a.available_bikes
+    FROM station s
+    JOIN (
+        SELECT number, last_update, available_bike_stands, available_bikes
+        FROM availability
+        WHERE (number, last_update) IN (
+            SELECT number, MAX(last_update)
+            FROM availability
+            GROUP BY number
+        )
+    ) a ON s.number = a.number
+    """
+    stations = pd.read_sql_query(query, engine)
     return stations.to_json(orient='index')
 
 
