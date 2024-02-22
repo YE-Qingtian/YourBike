@@ -43,9 +43,14 @@ def get_station(station_id):
     """
 
     # Data Query
-    current_day = datetime.datetime.now().strftime('%A')
-    seven_days_ago = datetime.datetime.now() - datetime.timedelta(days=7)
-    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(seven_days_ago.timestamp())}"
+    current_datetime = datetime.datetime.now()
+    current_day = current_datetime.strftime('%A')
+    # Adjust to the start of the day, 7 days ago
+    seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
+                                                                                   microsecond=0)
+    same_day_last_week = seven_days_ago_start.strftime('%A')
+
+    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
@@ -58,17 +63,27 @@ def get_station(station_id):
     df_resampled = df_resampled.to_frame().reset_index()
     df_resampled['day_of_week'] = df_resampled['last_update_datetime'].dt.day_name()
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.time
+    df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.strftime('%H:%M')
     df_resampled.sort_values(by='time_of_day', inplace=True)
-    # Create a Plotly graph
-    fig = px.line(df_resampled, x='time_of_day', y='available_bikes', color='day_of_week',
+    df_resampled['day_identifier'] = df_resampled['last_update_datetime'].apply(
+        lambda x: f"{x.strftime('%A')}(Current)" if x.strftime('%A') == current_day and x.date() == current_datetime.date()
+        else (f"{x.strftime('%A')}(Last Week)" if x.strftime('%A') == same_day_last_week and x.date() == seven_days_ago_start.date()
+              else x.strftime('%A'))
+    )
+
+    # Create a Plotly graph using 'day_identifier' for color distinction
+    fig = px.line(df_resampled, x='time_of_day', y='available_bikes', color='day_identifier',
                   template='plotly_white',
-                  labels={'time_of_day': 'Time', 'available_bikes': 'Available Bikes',"day_of_week":'Day of Week'})
+                  labels={'time_of_day': 'Time', 'available_bikes': 'Available Bikes', 'day_identifier': 'Day'})
     for trace in fig.data:
-        if trace.name == current_day:
-            trace.line.width = 8  # Full opacity for the current day
-            trace.line.dash = 'dash'
+        if "Current" in trace.name:
+            trace.line.width = 5  # Thicker line for the current day
+            trace.line.dash = 'dot'  # Dotted style for the current day
+        elif "Last Week" in trace.name:
+            trace.line.width = 3  # Slightly thicker line for the same day last week
+            trace.line.dash = 'longdash'  # Dashed style for the same day last week
         else:
-            trace.line.width = 1.5  # Reduced opacity for other days
+            trace.line.width = 1  # Default line width for other days
 
     # Render the template with the graph
     graph_html = fig.to_html(full_html=False)
