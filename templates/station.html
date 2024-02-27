@@ -15,5 +15,10 @@
     <div id="graph">
         {{ graph_html|safe }}
     </div>
+    <div>
+        {% for table in tables %}
+            {{ table|safe }}
+        {% endfor %}
+    </div>
 </body>
 </html>

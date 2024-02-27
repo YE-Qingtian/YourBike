@@ -83,7 +83,7 @@ def get_station(station_id):
                                                                                    microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%A')
 
-    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(seven_days_ago_start.timestamp())}"
+    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000*seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
@@ -97,7 +97,7 @@ def get_station(station_id):
     df_resampled['day_of_week'] = df_resampled['last_update_datetime'].dt.day_name()
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.time
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.strftime('%H:%M')
-    df_resampled.sort_values(by='time_of_day', inplace=True)
+    df_resampled.sort_values(by='last_update_datetime', inplace=True)
     df_resampled['day_identifier'] = df_resampled['last_update_datetime'].apply(
         lambda x: f"{x.strftime('%A')}(Current)" if x.strftime(
             '%A') == current_day and x.date() == current_datetime.date()
@@ -122,7 +122,7 @@ def get_station(station_id):
 
     # Render the template with the graph
     graph_html = fig.to_html(full_html=False)
-    return render_template("station.html", graph_html=graph_html)
+    return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
 
 
 if __name__ == "__main__":
