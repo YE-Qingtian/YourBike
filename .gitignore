@@ -1,1 +1,5 @@
 /data.log
+/config.py
+__pycache__
+/ML/AvailabilityDataCombined.csv
+/ML/AvailabilityDataCombined.gzip
