@@ -1,6 +1,6 @@
 import pandas as pd
 from flask import Flask, g, render_template, jsonify
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import plotly.express as px
 import datetime
 from config import *
@@ -13,6 +13,39 @@ engine = create_engine(dblink)
 @app.route('/')
 def root():
     return render_template('index.html')
+
+
+@app.route('/weather/<string:datetime_str>')
+def get_weather(datetime_str):
+    """
+    The function should lookup for the closest dt (Primary key) and return the record in json.
+
+    :param datetime_str: format %Y-%m-%d_%H:%M, example 2024-02-25_10:38
+    :return: example, [{"dt":1708804200,
+    "sunrise":1708759439,"sunset":1708797059,"temp":278.55,"feels_like":276.7,"pressure":997,"humidity":93,"uvi":0.0,
+    "clouds":100,"visibility":10000,"wind_speed":2.3,"wind_deg":120,"wind_gust":2.2,"weather_main":"Clouds",
+    "weather_description":"overcast clouds","rain":null,"snow":null}]
+    """
+    try:
+        input_datetime = datetime.datetime.strptime(datetime_str, "%Y-%m-%d_%H:%M")
+
+        # SQL to find the closest dt
+        query = text("""
+            SELECT * FROM weather
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, dt, :dt))
+            LIMIT 1
+        """)
+
+        df = pd.read_sql_query(query, engine, params={'dt': input_datetime})
+
+        if not df.empty:
+            # Convert DataFrame to JSON
+            # orient='records' makes the JSON output as an array of records
+            return df.to_json(orient='records', date_format='iso')
+        else:
+            return jsonify({"error": "No weather data found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route('/stations')
@@ -49,7 +82,7 @@ def get_station(station_id):
     seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,  microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%A')
 
-    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(seven_days_ago_start.timestamp())}"
+    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000*seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
@@ -63,10 +96,12 @@ def get_station(station_id):
     df_resampled['day_of_week'] = df_resampled['last_update_datetime'].dt.day_name()
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.time
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.strftime('%H:%M')
-    df_resampled.sort_values(by='time_of_day', inplace=True)
+    df_resampled.sort_values(by='last_update_datetime', inplace=True)
     df_resampled['day_identifier'] = df_resampled['last_update_datetime'].apply(
-        lambda x: f"{x.strftime('%A')}(Current)" if x.strftime('%A') == current_day and x.date() == current_datetime.date()
-        else (f"{x.strftime('%A')}(Last Week)" if x.strftime('%A') == same_day_last_week and x.date() == seven_days_ago_start.date()
+        lambda x: f"{x.strftime('%A')}(Current)" if x.strftime(
+            '%A') == current_day and x.date() == current_datetime.date()
+        else (f"{x.strftime('%A')}(Last Week)" if x.strftime(
+            '%A') == same_day_last_week and x.date() == seven_days_ago_start.date()
               else x.strftime('%A'))
     )
 
@@ -86,7 +121,7 @@ def get_station(station_id):
 
     # Render the template with the graph
     graph_html = fig.to_html(full_html=False)
-    return render_template("station.html", graph_html=graph_html)
+    return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
 
 
 if __name__ == "__main__":
