@@ -64,7 +64,30 @@ body {
   margin: 0;
   padding: 0;
 }
+/* Styles for the Google Maps Info Window content */
+.infoWindow-content {
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  font-size: 14px;
+}
 
+/* Specific styles for the graph container within the Info Window */
+.graphContainer {
+  width: 640px; /* Adjust the width as needed */
+  height: 320px; /* Adjust the height as needed */
+  margin-top: 10px;
+  background-color: #f9f9f9; /* Light background to help the graph stand out */
+  border: 1px solid #ccc; /* Light border around the graph container */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+  overflow: hidden; /* Ensures the content does not overflow the container */
+}
+
+/* Ensure the content within the graph container is centered and responsive */
+.graphContainer div {
+  text-align: center; /* Center-align the content */
+  width: 100%; /* Ensure it fills the container */
+  height: auto; /* Allow the height to adjust based on the content */
+}
 /* END MAP*/
 
 /* START OF COLLAPSIBLE SECTION */

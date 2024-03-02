@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}" />
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <title>Your Bike</title>
   </head>
   <body>
@@ -54,7 +55,6 @@
           <p>Last Updated :</p>
           <p>Available Bikes :</p>
           <p>Available Bike Stands :</p>
-          <button class="btn_graph"><a href="">View Graph</a></button>
         </div>
       </div>
     </div>
@@ -113,6 +113,6 @@
           : (d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)));
       })({ key: "AIzaSyBVA6mdrqjh6ZXWe5oJBt-Jac8uWOGhDE4", v: "weekly" });
     </script>
-    <script src="./main.js"></script>
+    <script type="module" src="./main.js"></script>
   </body>
 </html>

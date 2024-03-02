@@ -4,6 +4,7 @@ from sqlalchemy import create_engine, text
 import plotly.express as px
 import datetime
 from config import *
+import json
 
 app = Flask(__name__, static_url_path='')
 app.config.from_object('config')
@@ -77,10 +78,10 @@ def get_station(station_id):
 
     # Data Query
     current_datetime = datetime.datetime.now()
-    current_day = current_datetime.strftime('%A')
+    current_day = current_datetime.strftime('%a')
     # Adjust to the start of the day, 7 days ago
     seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,  microsecond=0)
-    same_day_last_week = seven_days_ago_start.strftime('%A')
+    same_day_last_week = seven_days_ago_start.strftime('%a')
 
     query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000*seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
@@ -98,11 +99,11 @@ def get_station(station_id):
     df_resampled['time_of_day'] = df_resampled['last_update_datetime'].dt.strftime('%H:%M')
     df_resampled.sort_values(by='last_update_datetime', inplace=True)
     df_resampled['day_identifier'] = df_resampled['last_update_datetime'].apply(
-        lambda x: f"{x.strftime('%A')}(Current)" if x.strftime(
-            '%A') == current_day and x.date() == current_datetime.date()
-        else (f"{x.strftime('%A')}(Last Week)" if x.strftime(
-            '%A') == same_day_last_week and x.date() == seven_days_ago_start.date()
-              else x.strftime('%A'))
+        lambda x: f"{x.strftime('%a')}(Now)" if x.strftime(
+            '%a') == current_day and x.date() == current_datetime.date()
+        else (f"{x.strftime('%a')}(Last)" if x.strftime(
+            '%a') == same_day_last_week and x.date() == seven_days_ago_start.date()
+              else x.strftime('%a'))
     )
 
     # Create a Plotly graph using 'day_identifier' for color distinction
@@ -120,9 +121,10 @@ def get_station(station_id):
             trace.line.width = 1  # Default line width for other days
 
     # Render the template with the graph
-    graph_html = fig.to_html(full_html=False)
-    return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
-
+    graph_json = fig.to_json(pretty=True)
+    # Output for debug
+    # return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
+    return jsonify(graph_json=json.loads(graph_json))
 
 if __name__ == "__main__":
     app.run(debug=True)

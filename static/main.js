@@ -101,8 +101,8 @@ async function initMap() {
         content: `<div>
         <h3>${station.name}</h3>
         <p>Station no.: ${station.number}</p>
-        <p>Bike Stands: ${station.bike_stands}</p>
-        <p>Available Bikes: ${station.available_bikes}</p>
+        <p>Available Bikes/Total Stands: ${station.available_bikes}/${station.bike_stands}</p>
+        <div id="graphContainer" class="graphContainer"></div>
         </div>`,
       });
 
@@ -111,29 +111,34 @@ async function initMap() {
         let stationInfo = document.getElementById("station_info");
         let availableInfo = document.getElementById("avail_info");
         stationInfo.innerHTML = `
-      <p>Number : ${station.number}</p>
-              <p>Address: ${station.address}, ${station.contract_name}</p>
-              <p>Latitude : ${station.position_lat}</p>
-              <p>Longtitude : ${station.position_lng}</p>
-              <p>Bike Stands : ${station.bike_stands}</p>
-              
+          <p>Number : ${station.number}</p>
+          <p>Address: ${station.address}, ${station.contract_name}</p>
+          <p>Latitude : ${station.position_lat}</p>
+          <p>Longitude : ${station.position_lng}</p>
+          <p>Bike Stands : ${station.bike_stands}</p>
+        `;
 
-      
-      `;
         availableInfo.innerHTML = `
-      <p>Bike Stand no. : ${station.number} </p>
-      <p>Last Updated : ${new Date(
-        station.last_update * 1000
-      ).toLocaleString()}</p>
-      <p>Available Bikes : ${station.available_bikes}</p>
-      <p>Available Bike Stands : ${station.available_bike_stands}</p>
-      <button class="btn_graph"><a target = "_blank" href="/available/${
-        station.number
-      }">View Graph</a></button>
-      
-      `;
-        // infoWindow.setContent(stationInfo);
+          <p>Bike Stand no. : ${station.number} </p>
+          <p>Last Updated : ${new Date(station.last_update * 1000).toLocaleString()}</p>
+          <p>Available Bikes : ${station.available_bikes}</p>
+          <p>Available Bike Stands : ${station.available_bike_stands}</p>
+          
+        `;
+        // Open the info window
         infoWindow.open(map, marker_station);
+        // Fetch the graph HTML from the Flask route and display it
+        fetch(`/available/${station.number}`)
+          .then(response => response.json())
+          .then(data => {
+            const graphContainer = document.getElementById('graphContainer');
+            // Ensure the container is empty before plotting
+            while (graphContainer.firstChild) {
+                graphContainer.removeChild(graphContainer.firstChild);
+            }
+            Plotly.newPlot('graphContainer', data.graph_json.data, data.graph_json.layout);
+          })
+          .catch(error => console.error('Error fetching graph:', error));
       });
     });
   }
