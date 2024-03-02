@@ -30,7 +30,8 @@ fetchDataFromDatabase();
 let map;
 
 async function initMap() {
-  const { Map } = await google.maps.importLibrary("maps");
+  const { Map, DirectionsService, DirectionsRenderer } =
+    await google.maps.importLibrary("maps");
 
   map = new Map(document.getElementById("map"), {
     zoom: 14,
@@ -49,7 +50,7 @@ async function initMap() {
         map: map,
         title: "Your Location",
         icon: {
-          url: "https://png.pngtree.com/png-clipart/20190924/original/pngtree-human-avatar-free-vector-png-image_4825373.jpg",
+          url: "https://toppng.com/uploads/preview/reen-person-icon-transparent-png-green-person-icon-green-person-ico-11563325236gfijwfavym.png",
           scaledSize: new google.maps.Size(50, 50), // Adjust size as needed
         },
       });
@@ -66,9 +67,9 @@ async function initMap() {
 
   const circleMap = (numberOfBikes) => {
     let fillColor = "#1E9600";
-    if (numberOfBikes > 20) {
+    if (numberOfBikes > 18) {
       fillColor = "#1E9600";
-    } else if (numberOfBikes < 20 && numberOfBikes >= 15) {
+    } else if (numberOfBikes < 18 && numberOfBikes >= 15) {
       fillColor = "#FFF200";
     } else if (numberOfBikes < 15 && numberOfBikes >= 10) {
       fillColor = "#b4ab00";
@@ -121,6 +122,32 @@ async function initMap() {
         infoWindow.open(map, marker_station);
       });
     });
+  }
+  const addressInput = document.getElementById("location");
+  addressInput.addEventListener("change", function () {
+    calculateAndDisplayRoute(addressInput.value);
+  });
+
+  // Function to calculate and display route
+  function calculateAndDisplayRoute(destination) {
+    const directionsService = new DirectionsService();
+    const directionsRenderer = new DirectionsRenderer();
+    directionsRenderer.setMap(map);
+
+    directionsService.route(
+      {
+        origin: userLatLng,
+        destination: destination,
+        travelMode: google.maps.TravelMode.BICYCLING,
+      },
+      (response, status) => {
+        if (status === "OK") {
+          directionsRenderer.setDirections(response);
+        } else {
+          window.alert("Directions request failed due to " + status);
+        }
+      }
+    );
   }
 }
 
