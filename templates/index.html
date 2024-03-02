@@ -22,42 +22,39 @@
           placeholder="Insert Location"
         />
       </div>
-      <div id="map"></div>
 
-      <div class="collapsible parent-collapsible">
-        <div class="collapsible-header">
-          Information About Bike Stations & Weather Status
+      <div id="map"></div>
+    </div>
+    <div class="collapsible-container">
+      <div class="collapsible">
+        <div class="collapsible-header">Weather</div>
+        <div class="collapsible-content child-content" id="weatherDiv">
+          <p id="date_date">Date :</p>
+          <p id="temperature">Temperature :</p>
+          <p id="pressure">Pressure :</p>
+          <p id=" humidity">Humidity :</p>
+          <p id="status">Status :</p>
+          <p id="description">Description :</p>
         </div>
-        <div class="collapsible-content parent-content">
-          <div class="collapsible">
-            <div class="collapsible-header">Weather</div>
-            <div class="collapsible-content child-content" id="weatherDiv">
-              <p id="date_date">Date :</p>
-              <p id="temperature">Temperature :</p>
-              <p id="pressure">Pressure :</p>
-              <p id=" humidity">Humidity :</p>
-              <p id="status">Status :</p>
-              <p id="description">Description :</p>
-            </div>
-          </div>
-          <div class="collapsible">
-            <div class="collapsible-header">Station</div>
-            <div class="collapsible-content child-content" id="station_info">
-              <p>Number :</p>
-              <p>Address:</p>
-              <p>Latitude :</p>
-              <p>Longtitude :</p>
-              <p>Bike Stands :</p>
-            </div>
-          </div>
-          <div class="collapsible">
-            <div class="collapsible-header">Avaliability</div>
-            <div class="collapsible-content child-content">
-              <p>Bike Stand no. :</p>
-              <p>Last Updated :</p>
-              <p>Avaliable Bikes :</p>
-            </div>
-          </div>
+      </div>
+      <div class="collapsible">
+        <div class="collapsible-header">Station</div>
+        <div class="collapsible-content child-content" id="station_info">
+          <p>Number :</p>
+          <p>Address:</p>
+          <p>Latitude :</p>
+          <p>Longtitude :</p>
+          <p>Bike Stands :</p>
+        </div>
+      </div>
+      <div class="collapsible">
+        <div class="collapsible-header">Availability</div>
+        <div class="collapsible-content child-content" id="avail_info">
+          <p>Bike Stand no. :</p>
+          <p>Last Updated :</p>
+          <p>Available Bikes :</p>
+          <p>Available Bike Stands :</p>
+          <button class="btn_graph">View Graph</button>
         </div>
       </div>
     </div>
