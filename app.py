@@ -46,8 +46,7 @@ def get_station(station_id):
     current_datetime = datetime.datetime.now()
     current_day = current_datetime.strftime('%A')
     # Adjust to the start of the day, 7 days ago
-    seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
-                                                                                   microsecond=0)
+    seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,  microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%A')
 
     query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(seven_days_ago_start.timestamp())}"
