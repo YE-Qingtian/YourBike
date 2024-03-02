@@ -77,12 +77,20 @@ async function initMap() {
   if (stationsData) {
     Object.values(stationsData).forEach((station) => {
       // remeber that JSON data in not an array. that's why I kept getting errors
-      new google.maps.Marker({
+      const marker_station = new google.maps.Marker({
         position: { lat: station.position_lat, lng: station.position_lng },
         map: map,
         title: station.name,
         clickable: true,
         icon: circleMap,
+      });
+      const infoWindow = new google.maps.InfoWindow({
+        content: `<div><h3>${station.name}</h3><p>Station no.: ${station.number}</p><p>Bike Stands: ${station.bike_stands}</p><p>Available Bikes: ${station.available_bikes}</p></div>`,
+      });
+
+      // Add event listener to marker to open info window when clicked
+      marker_station.addListener("click", function () {
+        infoWindow.open(map, marker_station);
       });
     });
   }
