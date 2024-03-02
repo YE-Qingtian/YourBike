@@ -85,11 +85,26 @@ async function initMap() {
         icon: circleMap,
       });
       const infoWindow = new google.maps.InfoWindow({
-        content: `<div><h3>${station.name}</h3><p>Station no.: ${station.number}</p><p>Bike Stands: ${station.bike_stands}</p><p>Available Bikes: ${station.available_bikes}</p></div>`,
+        content: `<div>
+        <h3>${station.name}</h3>
+        <p>Station no.: ${station.number}</p>
+        <p>Bike Stands: ${station.bike_stands}</p>
+        <p>Available Bikes: ${station.available_bikes}</p>
+        </div>`,
       });
 
       // Add event listener to marker to open info window when clicked
       marker_station.addListener("click", function () {
+        let stationInfo = document.getElementById("station_info");
+        stationInfo.innerHTML = `
+      <p>Number : ${station.number}</p>
+              <p>Address: ${station.address}, ${station.contract_name}</p>
+              <p>Latitude : ${station.position_lat}</p>
+              <p>Longtitude : ${station.position_lng}</p>
+              <p>Bike Stands : ${station.bike_stands}</p>
+      
+      `;
+        // infoWindow.setContent(stationInfo);
         infoWindow.open(map, marker_station);
       });
     });
