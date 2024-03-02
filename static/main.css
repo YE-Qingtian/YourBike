@@ -15,10 +15,10 @@ body {
 }
 
 .container {
-  height: 100vh; /* Set to occupy full viewport height */
+  height: 90vh; /* Set to occupy full viewport height */
   padding: 0px 70px 0px 70px;
-  margin: 30px 0px;
-  overflow: auto;
+  margin: 30px 0px 0px 0px;
+  /* overflow: auto; */
 }
 /* STARTING WITH NAVBAR */
 
@@ -56,7 +56,7 @@ body {
 
 #map {
   width: 100%;
-  height: 75%;
+  height: 85%;
 }
 html,
 body {
@@ -69,40 +69,64 @@ body {
 
 /* START OF COLLAPSIBLE SECTION */
 
-/* .collapsible-content .parent-content {
-  position: relative;
-} */
-.collapsible-content {
-  display: none;
+.collapsible-container {
+  margin: 0px 0px 15px 0px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.collapsible {
+  flex: 1;
+  margin-right: 10px;
 }
 
 .collapsible-header {
   text-align: center;
-  margin-top: 20px;
   background-color: #49beb7;
-  color: #333;
+  color: #fff;
   cursor: pointer;
   padding: 10px;
-  width: 100%;
-  border: none;
-  outline: none;
-  color: white;
   border-radius: 5px;
 }
 
-.collapsible-content.active {
-  background-color: #49beb65b;
-  display: block;
-  height: 200px;
-  position: relative;
+.collapsible-content {
+  display: none;
+  background-color: #fff;
+  border: 1px solid #24d4dd45;
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 5px;
 }
 
-/* .collapsible-content .parent-content .collapsible .collapsible-header {
-  width: 30%;
+.collapsible-content.active {
+  display: block;
+}
+
+.btn_graph {
+  font-weight: 500;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(90deg, #49beb7 0%, #085f63 100%);
+  padding: 10px 30px;
+  border: solid #ffffff84 2px;
+  box-shadow: rgb(0, 0, 0) 0px 0px 0px 0px;
+  border-radius: 50px 0px;
+  transition: 1000ms;
+  transform: translateY(0);
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-around;
-} */
+  cursor: pointer;
+}
+
+.btn_graph:hover {
+  transition: 1000ms;
+  padding: 10px 50px;
+  transform: translateY(-0px);
+  background: linear-gradient(90deg, #49beb7 0%, #085f63 100%);
+  color: #ffffff;
+  border: solid 2px #669e657f;
+}
 
 /* END OF COLLAPSIBLE SECTION */
 

@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // Add event listeners for collapsible headers
   const collapsibleHeaders = document.querySelectorAll(".collapsible-header");
-
   collapsibleHeaders.forEach(function (header) {
     header.addEventListener("click", function () {
       const content = this.nextElementSibling;
@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
 const fetchDataFromDatabase = async () => {
   try {
     const response = await fetch("/stations");
@@ -110,12 +109,23 @@ async function initMap() {
       // Add event listener to marker to open info window when clicked
       marker_station.addListener("click", function () {
         let stationInfo = document.getElementById("station_info");
+        let availableInfo = document.getElementById("avail_info");
         stationInfo.innerHTML = `
       <p>Number : ${station.number}</p>
               <p>Address: ${station.address}, ${station.contract_name}</p>
               <p>Latitude : ${station.position_lat}</p>
               <p>Longtitude : ${station.position_lng}</p>
               <p>Bike Stands : ${station.bike_stands}</p>
+      
+      `;
+        availableInfo.innerHTML = `
+      <p>Bike Stand no. : ${station.number} </p>
+      <p>Last Updated : ${new Date(
+        station.last_update * 1000
+      ).toLocaleString()}</p>
+      <p>Available Bikes : ${station.available_bikes}</p>
+      <p>Available Bike Stands : ${station.available_bike_stands}</p>
+      <button class="btn_graph">View Graph</button>
       
       `;
         // infoWindow.setContent(stationInfo);
