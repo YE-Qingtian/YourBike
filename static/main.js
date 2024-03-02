@@ -116,6 +116,8 @@ async function initMap() {
               <p>Latitude : ${station.position_lat}</p>
               <p>Longtitude : ${station.position_lng}</p>
               <p>Bike Stands : ${station.bike_stands}</p>
+              
+
       
       `;
         availableInfo.innerHTML = `
@@ -125,7 +127,9 @@ async function initMap() {
       ).toLocaleString()}</p>
       <p>Available Bikes : ${station.available_bikes}</p>
       <p>Available Bike Stands : ${station.available_bike_stands}</p>
-      <button class="btn_graph">View Graph</button>
+      <button class="btn_graph"><a target = "_blank" href="/available/${
+        station.number
+      }">View Graph</a></button>
       
       `;
         // infoWindow.setContent(stationInfo);
