@@ -90,4 +90,54 @@ async function initMap() {
 
 initMap();
 
+const getTheWeatherInformation = async () => {
+  try {
+    const response = await fetch("/stations");
+    if (!response.ok) {
+      throw new Error("Failed to fetch stationsData from the database");
+    }
+    const stationsData = await response.json();
+    // Process the stationsData here
+    console.log(stationsData);
+    return stationsData;
+  } catch (error) {
+    console.error("Error fetching stationsData:", error.message);
+  }
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+  const weatherValue = document.getElementById("userDate");
+  const weatherDiv = document.getElementById("weatherDiv");
+
+  weatherValue.addEventListener("change", async function () {
+    const userInputedDate = weatherValue.value;
+    // Qingtian, why is your weather foramt with _ and not ISO T ??
+    const final_date = userInputedDate.replace("T", "_");
+    try {
+      const response = await fetch(`/weather/${final_date}`);
+      if (!response.ok) {
+        throw new Error("Issues with weather Data");
+      }
+      let weatherData = await response.json();
+      console.log(weatherData);
+      showWeatherInfo(weatherData);
+    } catch (error) {
+      console.log(error.message);
+    }
+  });
+  let showWeatherInfo = (weatherData) => {
+    const weatherSpecific = weatherData[0];
+    const timestamp = weatherSpecific.dt;
+    const date = new Date(timestamp * 1000);
+    const dt = date.toUTCString();
+
+    weatherDiv.innerHTML = ` <p id="date_date">Date : ${dt}</p>
+    <p id="temperature">Temperature : ${weatherSpecific.temp}</p>
+    <p id="pressure">Pressure : ${weatherSpecific.pressure}</p>
+    <p id=" humidity">Humidity : ${weatherSpecific.humidity}</p>
+    <p id="status">Status : ${weatherSpecific.weather_main}</p>
+    <p id="description">Description : ${weatherSpecific.weather_description}</p>`;
+  };
+});
+
 // THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
