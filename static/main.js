@@ -64,13 +64,26 @@ async function initMap() {
     title: "Hello World!",
   });
 
-  const circleMap = {
-    path: google.maps.SymbolPath.CIRCLE,
-    fillColor: "blue",
-    fillOpacity: 0.5,
-    strokeColor: "red",
-    strokeWeight: 2,
-    scale: 15, // Adjust the size of the circle
+  const circleMap = (numberOfBikes) => {
+    let fillColor = "#1E9600";
+    if (numberOfBikes > 20) {
+      fillColor = "#1E9600";
+    } else if (numberOfBikes < 20 && numberOfBikes >= 15) {
+      fillColor = "#FFF200";
+    } else if (numberOfBikes < 15 && numberOfBikes >= 10) {
+      fillColor = "#b4ab00";
+    } else {
+      fillColor = "#FF0000";
+    }
+
+    return {
+      path: google.maps.SymbolPath.CIRCLE,
+      fillColor: fillColor,
+      fillOpacity: 0.5,
+      strokeColor: "red",
+      strokeWeight: 0,
+      scale: 15, // Adjust the size of the circle
+    };
   };
 
   const stationsData = await fetchDataFromDatabase();
@@ -82,7 +95,7 @@ async function initMap() {
         map: map,
         title: station.name,
         clickable: true,
-        icon: circleMap,
+        icon: circleMap(station.available_bikes),
       });
       const infoWindow = new google.maps.InfoWindow({
         content: `<div>
