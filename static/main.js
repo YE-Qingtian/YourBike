@@ -27,7 +27,7 @@ const fetchDataFromDatabase = async () => {
 fetchDataFromDatabase();
 
 let map;
-
+let userLatLng;
 async function initMap() {
   const { Map, DirectionsService, DirectionsRenderer } =
     await google.maps.importLibrary("maps");
@@ -40,7 +40,7 @@ async function initMap() {
   // Add marker for user's current location
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
-      const userLatLng = {
+      userLatLng = {
         lat: position.coords.latitude,
         lng: position.coords.longitude,
       };
@@ -120,7 +120,9 @@ async function initMap() {
 
         availableInfo.innerHTML = `
           <p>Bike Stand no. : ${station.number} </p>
-          <p>Last Updated : ${new Date(station.last_update * 1000).toLocaleString()}</p>
+          <p>Last Updated : ${new Date(
+            station.last_update * 1000
+          ).toLocaleString()}</p>
           <p>Available Bikes : ${station.available_bikes}</p>
           <p>Available Bike Stands : ${station.available_bike_stands}</p>
           
@@ -129,16 +131,20 @@ async function initMap() {
         infoWindow.open(map, marker_station);
         // Fetch the graph HTML from the Flask route and display it
         fetch(`/available/${station.number}`)
-          .then(response => response.json())
-          .then(data => {
-            const graphContainer = document.getElementById('graphContainer');
+          .then((response) => response.json())
+          .then((data) => {
+            const graphContainer = document.getElementById("graphContainer");
             // Ensure the container is empty before plotting
             while (graphContainer.firstChild) {
-                graphContainer.removeChild(graphContainer.firstChild);
+              graphContainer.removeChild(graphContainer.firstChild);
             }
-            Plotly.newPlot('graphContainer', data.graph_json.data, data.graph_json.layout);
+            Plotly.newPlot(
+              "graphContainer",
+              data.graph_json.data,
+              data.graph_json.layout
+            );
           })
-          .catch(error => console.error('Error fetching graph:', error));
+          .catch((error) => console.error("Error fetching graph:", error));
       });
     });
   }
@@ -149,8 +155,12 @@ async function initMap() {
 
   // Function to calculate and display route
   function calculateAndDisplayRoute(destination) {
-    const directionsService = new DirectionsService();
-    const directionsRenderer = new DirectionsRenderer();
+    // const directionsService = new DirectionsService();
+    const directionsService = new google.maps.DirectionsService(); // mistake I was making is init in different ways.
+
+    // const directionsRenderer = new DirectionsRenderer();
+    const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setDirections({ routes: [] }); // CLEARING PREV ROUTES .. NOT WORKING YET
     directionsRenderer.setMap(map);
 
     directionsService.route(
