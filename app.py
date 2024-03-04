@@ -111,10 +111,10 @@ def get_station(station_id):
                   template='plotly_white',
                   labels={'time_of_day': 'Time', 'available_bikes': 'Available Bikes', 'day_identifier': 'Day'})
     for trace in fig.data:
-        if "Current" in trace.name:
+        if "Now" in trace.name:
             trace.line.width = 5  # Thicker line for the current day
             trace.line.dash = 'dot'  # Dotted style for the current day
-        elif "Last Week" in trace.name:
+        elif "Last" in trace.name:
             trace.line.width = 3  # Slightly thicker line for the same day last week
             trace.line.dash = 'longdash'  # Dashed style for the same day last week
         else:

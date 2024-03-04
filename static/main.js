@@ -138,6 +138,7 @@ async function initMap() {
             while (graphContainer.firstChild) {
               graphContainer.removeChild(graphContainer.firstChild);
             }
+            console.log(data.graph_json);
             Plotly.newPlot(
               "graphContainer",
               data.graph_json.data,

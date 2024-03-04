@@ -73,8 +73,8 @@ body {
 
 /* Specific styles for the graph container within the Info Window */
 .graphContainer {
-  width: 640px; /* Adjust the width as needed */
-  height: 320px; /* Adjust the height as needed */
+  width: 600px; /* Adjust the width as needed */
+  height: 350px; /* Adjust the height as needed */
   margin-top: 10px;
   background-color: #f9f9f9; /* Light background to help the graph stand out */
   border: 1px solid #ccc; /* Light border around the graph container */
