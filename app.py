@@ -5,6 +5,8 @@ import plotly.express as px
 import datetime
 from config import *
 import json
+import joblib
+import requests
 
 app = Flask(__name__, static_url_path='')
 app.config.from_object('config')
@@ -125,6 +127,56 @@ def get_station(station_id):
     # Output for debug
     # return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
     return jsonify(graph_json=json.loads(graph_json))
+
+@app.route('/inference/<int:station_id>/<string:datetime_str>')
+def inference(station_id, datetime_str):
+    """
+
+    :param station_id:
+    :param datetime_str: Using ISO 8601 format.
+    :return:
+    """
+    def get_weather(station_id, datetime_str):
+        def parse_item(item):
+            rain = item.get('rain', {'1h': None}).get('1h')
+            snow = item.get('snow', {'1h': None}).get('1h')
+            weather_main = item['weather'][0]['main'] if 'weather' in item and item['weather'] else None
+            weather_description = item['weather'][0]['description'] if 'weather' in item and item['weather'] else None
+            return {
+                'dt': item.get('dt'),
+                'sunrise': item.get('sunrise'),
+                'sunset': item.get('sunset'),
+                'temp': item.get('temp'),
+                'feels_like': item.get('feels_like'),
+                'pressure': item.get('pressure'),
+                'humidity': item.get('humidity'),
+                'uvi': item.get('uvi'),
+                'clouds': item.get('clouds'),
+                'visibility': item.get('visibility'),
+                'wind_speed': item.get('wind_speed'),
+                'wind_deg': item.get('wind_deg'),
+                'wind_gust': item.get('wind_gust'),
+                'weather_main': weather_main,
+                'weather_description': weather_description,
+                'rain': rain,
+                'snow': snow
+            }
+
+        dtForecast = int(datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%SZ").timestamp())
+        weatherResponse = requests.get(
+            f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={53}&lon={-6}&dt={dtForecast}&appid={OpenWeather_api_key}")
+        weatherJson = json.loads(weatherResponse.text)
+        weather = parse_item(weatherJson['data'][0])
+        return weather
+
+    model = joblib.load("/ML/BestModel.joblib")
+    X_infer = pd.DataFrame.from_dict([{"number":station_id, "banking":0} | get_weather(datetime_str)])
+    featuresList = ["number", "last_update", "available_bikes", "banking", "temp", "feels_like", "pressure", "humidity",
+                    "uvi", "clouds", "visibility", "wind_speed", "wind_deg", "wind_gust", "weather_main", "rain","snow",
+                    "weather_description"]
+    X_infer = X_infer[featuresList]
+    prediction = model.predict(X_infer)
+    return prediction
 
 if __name__ == "__main__":
     app.run(debug=True)
