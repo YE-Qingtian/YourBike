@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Light/Dark Mode Toggle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s ease;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+        }
+
+        .toggle-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .toggle-button {
+            cursor: pointer;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+            border-radius: 25px;
+            background-color: #dddddd;
+            position: relative;
+        }
+
+        .toggle-button::before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 3px;
+            transition: 0.3s ease;
+        }
+
+        input[type="checkbox"] {
+            display: none;
+        }
+
+        input[type="checkbox"]:checked+.toggle-button::before {
+            transform: translateX(22px) translateY(-50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toggle-container">
+        <label class="toggle-label" for="mode-toggle">Toggle Mode:</label>
+        <input type="checkbox" id="mode-toggle">
+        <div class="toggle-button"></div>
+    </div>
+
+    <h1>Light/Dark Mode Example</h1>
+    <p></p>
+
+    <script>
+        const toggleButton = document.querySelector('.toggle-button');
+        const modeToggle = document.getElementById('mode-toggle');
+
+        // Check if user has a preference for dark mode
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+        // Set initial mode based on user's preference
+        if (prefersDarkScheme.matches) {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Function to toggle mode
+        function toggleMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        // Event listener for toggle button
+        toggleButton.addEventListener('click', () => {
+            toggleMode();
+        });
+
+        // Event listener for checkbox toggle
+        modeToggle.addEventListener('change', () => {
+            toggleMode();
+        });
+    </script>
+</body>
+
+</html>
