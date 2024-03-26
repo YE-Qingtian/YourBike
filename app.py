@@ -136,6 +136,13 @@ def inference(station_id, datetime_str):
     :param datetime_str: Using ISO 8601 format.
     :return:
     """
+    def addHourDayMonth(dfX):
+        # Convert 'last_update' to datetime and extract useful features
+        dfX['last_update'] = pd.to_datetime(dfX['last_update'])
+        dfX['hour'] = dfX['last_update'].dt.hour
+        dfX['day'] = dfX['last_update'].dt.day
+        dfX['month'] = dfX['last_update'].dt.month
+        dfX = dfX.drop(['last_update'], axis=1, inplace=True)
     def get_weather(station_id, datetime_str):
         def parse_item(item):
             rain = item.get('rain', {'1h': None}).get('1h')
@@ -162,21 +169,22 @@ def inference(station_id, datetime_str):
                 'snow': snow
             }
 
-        dtForecast = int(datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%SZ").timestamp())
+        dtForecast = int(datetime.datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%SZ").timestamp())
         weatherResponse = requests.get(
             f"https://api.openweathermap.org/data/3.0/onecall/timemachine?lat={53}&lon={-6}&dt={dtForecast}&appid={OpenWeather_api_key}")
         weatherJson = json.loads(weatherResponse.text)
         weather = parse_item(weatherJson['data'][0])
         return weather
 
-    model = joblib.load("/ML/BestModel.joblib")
-    X_infer = pd.DataFrame.from_dict([{"number":station_id, "banking":0} | get_weather(datetime_str)])
-    featuresList = ["number", "last_update", "available_bikes", "banking", "temp", "feels_like", "pressure", "humidity",
+    model = joblib.load("ML/BestModel.joblib")
+    X_infer = pd.DataFrame.from_dict([{"number":station_id, "banking":0, "last_update": datetime_str} | get_weather(station_id, datetime_str)])
+    featuresList = ["number", "last_update", "banking", "temp", "feels_like", "pressure", "humidity",
                     "uvi", "clouds", "visibility", "wind_speed", "wind_deg", "wind_gust", "weather_main", "rain","snow",
                     "weather_description"]
     X_infer = X_infer[featuresList]
+    addHourDayMonth(X_infer)
     prediction = model.predict(X_infer)
-    return prediction
+    return jsonify(prediction[0])
 
 if __name__ == "__main__":
     app.run(debug=True)
