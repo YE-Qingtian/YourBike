@@ -82,10 +82,11 @@ def get_station(station_id):
     current_datetime = datetime.datetime.now()
     current_day = current_datetime.strftime('%a')
     # Adjust to the start of the day, 7 days ago
-    seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,  microsecond=0)
+    seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
+                                                                                   microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%a')
 
-    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000*seven_days_ago_start.timestamp())}"
+    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000 * seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
@@ -128,14 +129,15 @@ def get_station(station_id):
     # return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
     return jsonify(graph_json=json.loads(graph_json))
 
+
 @app.route('/inference/<int:station_id>/<string:datetime_str>')
 def inference(station_id, datetime_str):
     """
-
     :param station_id:
     :param datetime_str: Using ISO 8601 format.
     :return:
     """
+
     def addHourDayMonth(dfX):
         # Convert 'last_update' to datetime and extract useful features
         dfX['last_update'] = pd.to_datetime(dfX['last_update'])
@@ -143,6 +145,7 @@ def inference(station_id, datetime_str):
         dfX['day'] = dfX['last_update'].dt.day
         dfX['month'] = dfX['last_update'].dt.month
         dfX = dfX.drop(['last_update'], axis=1, inplace=True)
+
     def get_weather(station_id, datetime_str):
         def parse_item(item):
             rain = item.get('rain', {'1h': None}).get('1h')
@@ -176,15 +179,19 @@ def inference(station_id, datetime_str):
         weather = parse_item(weatherJson['data'][0])
         return weather
 
-    model = joblib.load("ML/BestModel.joblib")
-    X_infer = pd.DataFrame.from_dict([{"number":station_id, "banking":0, "last_update": datetime_str} | get_weather(station_id, datetime_str)])
+    model = joblib.load(f"ML/models/{station_id}.joblib")
+    X_infer = pd.DataFrame.from_dict(
+        [{"number": station_id, "banking": 0, "last_update": datetime_str} | get_weather(station_id, datetime_str)])
     featuresList = ["number", "last_update", "banking", "temp", "feels_like", "pressure", "humidity",
-                    "uvi", "clouds", "visibility", "wind_speed", "wind_deg", "wind_gust", "weather_main", "rain","snow",
+                    "uvi", "clouds", "visibility", "wind_speed", "wind_deg", "wind_gust", "weather_main", "rain",
+                    "snow",
                     "weather_description"]
     X_infer = X_infer[featuresList]
     addHourDayMonth(X_infer)
+    print(f"model: ML/models/{station_id}.joblib \ndatetime_str: {datetime_str} \nmodel: {model} \nX_infer:{X_infer.to_dict()}")
     prediction = model.predict(X_infer)
     return jsonify(prediction[0])
+
 
 if __name__ == "__main__":
     app.run(debug=True)
