@@ -1,4 +1,4 @@
-GoogleMap_api_key = "AIzaSyBVA6mdrqjh6ZXWe5oJBt-Jac8uWOGhDE4"
+GoogleMap_api_key = "AIzaSyB0I6hTtpc6uQPVy2wcdKz1ezH4b3QfHlI"
 JDC_api_key = "7b7c894ed62048d03da1e48c703202765cf2c32e"
 OpenWeather_api_key = "6ac1c4119c9a1919193d6b37a98a9b0b"
 
