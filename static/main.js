@@ -29,7 +29,11 @@ fetchDataFromDatabase();
 let map;
 let userLatLng;
 async function initMap() {
-  const { Map, DirectionsService, DirectionsRenderer } =
+  const {
+    Map,
+    DirectionsService,
+    DirectionsRenderer,
+  } = // check why it is not being used
     await google.maps.importLibrary("maps");
 
   map = new Map(document.getElementById("map"), {
@@ -58,11 +62,11 @@ async function initMap() {
     console.error("Geolocation is not supported by this browser.");
   }
 
-  new google.maps.Marker({
-    position: { lat: 53.351757, lng: -6.279787 },
-    map: map,
-    title: "Hello World!",
-  });
+  // new google.maps.Marker({
+  //   position: { lat: 53.351757, lng: -6.279787 },
+  //   map: map,
+  //   title: "Hello World!",
+  // });
 
   const circleMap = (numberOfBikes) => {
     let fillColor = "#1E9600";
@@ -224,11 +228,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const dt = date.toUTCString();
 
     weatherDiv.innerHTML = ` <p id="date_date">Date : ${dt}</p>
-    <p id="temperature">Temperature : ${weatherSpecific.temp}</p>
+    <p id="temperature">Temperature : ${weatherSpecific.temp} F</p>
     <p id="pressure">Pressure : ${weatherSpecific.pressure}</p>
     <p id=" humidity">Humidity : ${weatherSpecific.humidity}</p>
     <p id="status">Status : ${weatherSpecific.weather_main}</p>
     <p id="description">Description : ${weatherSpecific.weather_description}</p>`;
+
+    let temperatureWidget = document.getElementById("temp_widget");
+    console.log(temperatureWidget);
+    temperatureWidget.innerHTML = `${(weatherSpecific.temp - 273.15).toFixed(
+      2
+    )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>`;
   };
 });
 
