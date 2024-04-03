@@ -153,26 +153,73 @@ async function initMap() {
       });
     });
   }
-  const addressInput = document.getElementById("location");
-  addressInput.addEventListener("change", function () {
-    calculateAndDisplayRoute(addressInput.value);
+  // const addressInput = document.getElementById("location1");
+  // addressInput.addEventListener("change", function () {
+  //   calculateAndDisplayRoute(addressInput.value);
+  // });
+
+  // // Function to calculate and display route
+  // function calculateAndDisplayRoute(destination) {
+  //   // const directionsService = new DirectionsService();
+  //   const directionsService = new google.maps.DirectionsService(); // mistake I was making is init in different ways.
+
+  //   // const directionsRenderer = new DirectionsRenderer();
+  //   const directionsRenderer = new google.maps.DirectionsRenderer();
+  //   directionsRenderer.setDirections({ routes: [] }); // CLEARING PREV ROUTES .. NOT WORKING YET
+  //   directionsRenderer.setMap(map);
+
+  //   directionsService.route(
+  //     {
+  //       origin: userLatLng,
+  //       destination: destination,
+  //       travelMode: google.maps.TravelMode.BICYCLING,
+  //     },
+  //     (response, status) => {
+  //       if (status === "OK") {
+  //         directionsRenderer.setDirections(response);
+  //       } else {
+  //         window.alert("Directions request failed due to " + status);
+  //       }
+  //     }
+  //   );
+  // }
+
+  const addressInputStart = document.getElementById("location0");
+  const addressInputDestination = document.getElementById("location1");
+  const autocompleteStart = new google.maps.places.Autocomplete(
+    addressInputStart
+  );
+  const autocompleteDestination = new google.maps.places.Autocomplete(
+    addressInputDestination
+  );
+
+  addressInputStart.addEventListener("change", function () {
+    calculateAndDisplayRoute();
   });
 
-  // Function to calculate and display route
-  function calculateAndDisplayRoute(destination) {
-    // const directionsService = new DirectionsService();
-    const directionsService = new google.maps.DirectionsService(); // mistake I was making is init in different ways.
+  addressInputDestination.addEventListener("change", function () {
+    calculateAndDisplayRoute();
+  });
+  const directionsRenderer = new google.maps.DirectionsRenderer();
 
-    // const directionsRenderer = new DirectionsRenderer();
-    const directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setDirections({ routes: [] }); // CLEARING PREV ROUTES .. NOT WORKING YET
+  async function calculateAndDisplayRoute() {
+    const startLocation = addressInputStart.value;
+    const destination = addressInputDestination.value;
+
+    if (!startLocation || !destination) {
+      return; // Exit if either start location or destination is empty
+    }
+
+    const directionsService = new google.maps.DirectionsService();
+    // const directionsRenderer = new google.maps.DirectionsRenderer();
+    directionsRenderer.setMap(null);
     directionsRenderer.setMap(map);
-
+    // directionsRenderer.setDirections({ routes: [] });
     directionsService.route(
       {
-        origin: userLatLng,
+        origin: startLocation,
         destination: destination,
-        travelMode: google.maps.TravelMode.BICYCLING,
+        travelMode: google.maps.TravelMode.DRIVING,
       },
       (response, status) => {
         if (status === "OK") {
