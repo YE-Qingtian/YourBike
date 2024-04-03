@@ -37,11 +37,14 @@ body {
 }
 
 .navbar #userDate {
-  width: 20%;
+  width: 15%;
 }
 
-.navbar #location {
-  width: 30%;
+.navbar #location0 {
+  width: 20%;
+}
+.navbar #location1 {
+  width: 20%;
 }
 
 .navbar input {

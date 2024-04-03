@@ -6,6 +6,8 @@
 
     <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}" />
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0I6hTtpc6uQPVy2wcdKz1ezH4b3QfHlI&libraries=places"></script>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -26,8 +28,16 @@
         <input
           type="text"
           name="location"
-          id="location"
-          placeholder="Insert Location"
+          id="location0"
+          placeholder="Insert Start Location"
+          autocomplete="on"
+        />
+        <input
+          type="text"
+          name="location"
+          id="location1"
+          placeholder="Destination"
+          autocomplete="on"
         />
         <p id="temp_widget">
           &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>
