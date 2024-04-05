@@ -20,6 +20,19 @@ body {
   margin: 30px 0px 0px 0px;
   /* overflow: auto; */
 }
+
+/* START VIDEO */
+#bkg-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 130%;
+
+  overflow: hidden;
+  z-index: -1; /* Ensure the video is behind other content */
+}
+/* END VIDEO */
+
 /* STARTING WITH NAVBAR */
 
 .navbar {
@@ -30,6 +43,11 @@ body {
   flex-wrap: wrap;
   border-bottom: 1px solid #49beb67f;
   margin-bottom: 10px;
+}
+.navbar,
+.container {
+  position: relative;
+  z-index: 1; /* Ensure content appears above the video */
 }
 
 .navbar img {
@@ -61,6 +79,12 @@ body {
 /*END OF NAVBAR*/
 
 /* START MAP */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
 #map {
   width: 100%;
@@ -72,6 +96,67 @@ body {
   margin: 0;
   padding: 0;
 }
+.sidebar {
+  position: absolute;
+  top: 100px;
+  left: -250px; /* Adjust according to your sidebar width */
+  width: 250px; /* Sidebar width */
+  height: 50%;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  border-bottom: 1px solid #49beb7;
+  border-right: 1px solid #49beb7;
+  transition: left 0.5s ease;
+}
+.sidebar-logo {
+  width: 150px;
+  display: block;
+  margin: 0 auto 20px;
+}
+.sidebar input {
+  width: calc(100% - 40px);
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.sidebar .recommended-stations {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.sidebar-toggle {
+  position: absolute;
+  top: 20px;
+  right: 15px;
+  font-size: 25px;
+  cursor: pointer;
+  color: black;
+  z-index: 50;
+  border: none;
+  outline: none;
+}
+
+.sidebar-toggle:hover {
+  color: #555;
+}
+
+.collapsible-map-container {
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  width: 100%;
+  /* height: 100%; */
+  padding: 20px; /* Adjust padding as needed */
+  box-sizing: border-box; /* Include padding in width and height calculations */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Ensure space between elements */
+}
+
 /* Styles for the Google Maps Info Window content */
 .infoWindow-content {
   font-family: Arial, sans-serif;
@@ -100,14 +185,23 @@ body {
 
 /* START OF COLLAPSIBLE SECTION */
 
-.collapsible-container {
+/* .collapsible-container {
   margin: 0px 0px 15px 0px;
   display: flex;
   justify-content: space-evenly;
+} */
+.collapsible-container {
+  display: flex;
+  justify-content: space-evenly;
+
+  border-radius: 10px; /* Add border radius for styling */
+  padding: 20px; /* Adjust padding as needed */
+  overflow-y: auto; /* Add vertical scrollbar if content exceeds container height */
 }
 
 .collapsible {
-  flex: 1;
+  /* flex: 1; */
+  margin-bottom: 10px;
   margin-right: 10px;
 }
 
@@ -118,6 +212,7 @@ body {
   cursor: pointer;
   padding: 10px;
   border-radius: 5px;
+  width: 250px;
 }
 
 .collapsible-content {
@@ -160,6 +255,30 @@ body {
 }
 
 /* END OF COLLAPSIBLE SECTION */
+
+/* START OF STATION-PREDICTION SECTION */
+
+.station-prediction p {
+  border: 1px solid #085f63;
+  padding: 10px 5px 10px 0px;
+  color: white;
+}
+.station-prediction p:nth-child(even) {
+  background-color: #085e63ae;
+}
+
+.station-prediction p:nth-child(odd) {
+  background-color: #49beb68b;
+}
+
+.station-prediction p:hover {
+  border: 1px solid #188546;
+  padding: 10px 5px 10px 0px;
+  transform: scale(1.1, 1.1);
+  cursor: pointer;
+}
+
+/* END OF STATION-PREDICTION SECTION */
 
 /* START OF FOOTER */
 
