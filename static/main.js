@@ -7,6 +7,18 @@ document.addEventListener("DOMContentLoaded", function () {
       content.classList.toggle("active");
     });
   });
+
+  const sidebar = document.getElementById("sidebar");
+  const sidebarToggle = document.getElementById("sidebar-toggle");
+
+  sidebarToggle.addEventListener("click", function () {
+    const currentLeft = parseFloat(window.getComputedStyle(sidebar).left);
+    if (currentLeft < 0) {
+      sidebar.style.left = "20px";
+    } else {
+      sidebar.style.left = "-250px"; // Adjust according to your sidebar width
+    }
+  });
 });
 const fetchDataFromDatabase = async () => {
   try {
@@ -23,9 +35,39 @@ const fetchDataFromDatabase = async () => {
   }
 };
 
+// START PERSONAL TESTING
+
+// async function fetchPrediction(stationId, datetimeStr) {
+//   try {
+//     const response = await fetch(`/inference/${stationId}/${datetimeStr}`);
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch data");
+//     }
+//     const data = await response.json();
+//     console.log(data);
+//     return data;
+//   } catch (error) {
+//     console.error("Error fetching prediction:", error);
+//     throw error;
+//   }
+// }
+
+// const stationId = 50; // Replace with the actual station ID
+// const datetimeStr = "2024-04-03T12:00:00Z"; // Replace with the actual datetime string
+// fetchPrediction(stationId, datetimeStr)
+//   .then((prediction) => {
+//     console.log("Prediction:", prediction);
+//     // Do something with the prediction
+//   })
+//   .catch((error) => {
+//     // Handle error
+//   });
+
+// END PERSONAL TESTING
+
 // Call the async function to fetch stationsData when needed
 fetchDataFromDatabase();
-
+let weatherValue; //the reason I did it here is a global variable access issue, this is the fastest way to I came across
 let map;
 let userLatLng;
 async function initMap() {
@@ -36,9 +78,22 @@ async function initMap() {
   } = // check why it is not being used
     await google.maps.importLibrary("maps");
 
+  const customMapStyles = [
+    {
+      featureType: "water",
+      elementType: "geometry",
+      stylers: [{ color: "#49beb7" }],
+    },
+    {
+      featureType: "landscape",
+      elementType: "geometry",
+      stylers: [{ color: "#24d4dd45" }],
+    },
+  ];
   map = new Map(document.getElementById("map"), {
     zoom: 14,
     center: new google.maps.LatLng(53.34511048273914, -6.267027506499677),
+    styles: customMapStyles, // Apply custom map styles
   });
 
   // Add marker for user's current location
@@ -114,6 +169,7 @@ async function initMap() {
       marker_station.addListener("click", function () {
         let stationInfo = document.getElementById("station_info");
         let availableInfo = document.getElementById("avail_info");
+
         stationInfo.innerHTML = `
           <p>Number : ${station.number}</p>
           <p>Address: ${station.address}, ${station.contract_name}</p>
@@ -153,36 +209,6 @@ async function initMap() {
       });
     });
   }
-  // const addressInput = document.getElementById("location1");
-  // addressInput.addEventListener("change", function () {
-  //   calculateAndDisplayRoute(addressInput.value);
-  // });
-
-  // // Function to calculate and display route
-  // function calculateAndDisplayRoute(destination) {
-  //   // const directionsService = new DirectionsService();
-  //   const directionsService = new google.maps.DirectionsService(); // mistake I was making is init in different ways.
-
-  //   // const directionsRenderer = new DirectionsRenderer();
-  //   const directionsRenderer = new google.maps.DirectionsRenderer();
-  //   directionsRenderer.setDirections({ routes: [] }); // CLEARING PREV ROUTES .. NOT WORKING YET
-  //   directionsRenderer.setMap(map);
-
-  //   directionsService.route(
-  //     {
-  //       origin: userLatLng,
-  //       destination: destination,
-  //       travelMode: google.maps.TravelMode.BICYCLING,
-  //     },
-  //     (response, status) => {
-  //       if (status === "OK") {
-  //         directionsRenderer.setDirections(response);
-  //       } else {
-  //         window.alert("Directions request failed due to " + status);
-  //       }
-  //     }
-  //   );
-  // }
 
   const addressInputStart = document.getElementById("location0");
   const addressInputDestination = document.getElementById("location1");
@@ -207,14 +233,12 @@ async function initMap() {
     const destination = addressInputDestination.value;
 
     if (!startLocation || !destination) {
-      return; // Exit if either start location or destination is empty
+      return;
     }
 
     const directionsService = new google.maps.DirectionsService();
-    // const directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(null);
     directionsRenderer.setMap(map);
-    // directionsRenderer.setDirections({ routes: [] });
     directionsService.route(
       {
         origin: startLocation,
@@ -257,6 +281,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const userInputedDate = weatherValue.value;
     // Qingtian, why is your weather foramt with _ and not ISO T ??
     const final_date = userInputedDate.replace("T", "_");
+    console.log(userInputedDate);
+
+    const currentTimeAndDate = new Date();
+
     try {
       const response = await fetch(`/weather/${final_date}`);
       if (!response.ok) {
@@ -269,25 +297,217 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(error.message);
     }
   });
+
   let showWeatherInfo = (weatherData) => {
+    console.log(weatherData);
     const weatherSpecific = weatherData[0];
     const timestamp = weatherSpecific.dt;
     const date = new Date(timestamp * 1000);
     const dt = date.toUTCString();
 
     weatherDiv.innerHTML = ` <p id="date_date">Date : ${dt}</p>
-    <p id="temperature">Temperature : ${weatherSpecific.temp} F</p>
+    <p id="temperature">Temperature : ${Math.trunc(
+      weatherSpecific.temp - 273.15
+    )} Celisus</p>
     <p id="pressure">Pressure : ${weatherSpecific.pressure}</p>
     <p id=" humidity">Humidity : ${weatherSpecific.humidity}</p>
     <p id="status">Status : ${weatherSpecific.weather_main}</p>
-    <p id="description">Description : ${weatherSpecific.weather_description}</p>`;
+    <p id="description">Description : ${
+      weatherSpecific.weather_description
+    }</p>`;
 
     let temperatureWidget = document.getElementById("temp_widget");
     console.log(temperatureWidget);
     temperatureWidget.innerHTML = `${(weatherSpecific.temp - 273.15).toFixed(
       2
     )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>`;
+
+    // let weatherDesc = weatherSpecific.weather_description;
+    let weatherDesc = "clear sky";
+    let backgroundVideo = document.getElementById("bkg-video");
+    let sourceVideo = document.getElementById("src-video");
+
+    if (weatherDesc.includes("rain")) {
+      sourceVideo.src = "/videos/raining.mp4";
+
+      backgroundVideo.load();
+    } else if (weatherDesc.includes("clouds")) {
+      sourceVideo.src = "/videos/clouds.mp4";
+      backgroundVideo.load();
+    } else if (weatherDesc.includes("clear sky")) {
+      console.log("clear sky");
+      sourceVideo.src = "/videos/clear_sky.mp4";
+      backgroundVideo.load();
+    } else {
+      console.log("Weather condition not handled.");
+    }
   };
+
+  //START PREDICTION
+  const locationInput = document.getElementById("location2");
+  const dateInput = document.getElementById("userDate1");
+  const recommendedStations = document.querySelector(".recommended-stations");
+  const isoDate = new Date(dateInput + ":00").toISOString(); // implemented elsewhere
+
+  const fetchRecommendedStations = async (location, datetime) => {
+    try {
+      // Fetch nearest stations based on the provided location
+      const nearestStations = await findNearestStations(location);
+
+      // Fetch predictions for each nearest station based on the provided datetime
+      const predictions = await Promise.all(
+        nearestStations.map((station) => fetchPrediction(station, datetime))
+      );
+
+      // Clear previous recommendations
+      recommendedStations.innerHTML = "";
+
+      // Display recommendations
+      predictions.forEach((prediction) => {
+        const stationPredictionDiv = document.createElement("div");
+        stationPredictionDiv.className = "station-prediction";
+
+        const stationInfo = document.createElement("p");
+        stationInfo.textContent = `Recommended Station: ${prediction.station}`;
+        stationPredictionDiv.appendChild(stationInfo);
+
+        const predictionInfo = document.createElement("p");
+        predictionInfo.textContent = `Predicted no. of Bikes: ${prediction.prediction}`;
+        stationPredictionDiv.appendChild(predictionInfo);
+
+        recommendedStations.appendChild(stationPredictionDiv);
+      });
+    } catch (error) {
+      console.error("Error fetching recommended stations:", error.message);
+    }
+  };
+
+  const findNearestStations = async (location) => {
+    try {
+      const stationsData = await fetchDataFromDatabase();
+      if (!stationsData) {
+        throw new Error("Failed to fetch stations data from the database.");
+      }
+
+      // Convert stationsData object to an array of station objects
+      const stationArray = Object.values(stationsData);
+      const distances = [];
+      console.log(stationArray); // remember, no issues with fetching data, logical error somewhere else.
+      // Calculate distances from the provided location to each station
+      stationArray.forEach((station) => {
+        const stationLocation = new google.maps.LatLng(
+          station.position_lat,
+          station.position_lng
+        );
+
+        const distance = google.maps.geometry.spherical.computeDistanceBetween(
+          location,
+          stationLocation
+        );
+        distances.push({ stationId: station.number, distance }); // dont forget, when no key is specified distance : distance => same as distance
+      });
+      console.log(distances);
+      // Sort stations by distance in ascending order
+      distances.sort((a, b) => a.distance - b.distance);
+
+      // Extract the nearest station IDs
+      const nearestStations = distances
+        .slice(0, 3)
+        .map((station) => station.stationId);
+      return nearestStations;
+    } catch (error) {
+      console.error("Error finding nearest stations:", error.message);
+
+      return [];
+    }
+  };
+
+  const fetchPrediction = async (stationId, datetime) => {
+    try {
+      // Fetch prediction for the specified station and datetime
+      const response = await fetch(`/inference/${stationId}/${datetime}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch prediction data.");
+      }
+      console.log(`data from fetchPredictions : ${await response.json()}`);
+      return await response.json();
+    } catch (error) {
+      console.error(
+        `Error fetching prediction for station ${stationId}:`,
+        error.message
+      );
+      return { station: stationId, prediction: "N/A" };
+    }
+  };
+
+  // START TEST FOR GEOCODE ADDRESS
+  async function geocodeAddress(address) {
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+          address
+        )}&key=AIzaSyB0I6hTtpc6uQPVy2wcdKz1ezH4b3QfHlI`
+      );
+      const data = await response.json();
+      if (data.results && data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+        return { lat: location.lat, lng: location.lng };
+      } else {
+        throw new Error("No results found for the address");
+      }
+    } catch (error) {
+      throw new Error("Error geocoding address: " + error.message);
+    }
+  }
+
+  // END CODE FOR GEOCODE ADDRESS
+  // Inside the event listener for location input change
+  locationInput.addEventListener("change", async function () {
+    const location = this.value;
+    console.log(location);
+    const datetime = dateInput.value;
+    if (location && datetime) {
+      try {
+        // Use the geocodeAddress function to obtain coordinates
+        const coordinates = await geocodeAddress(location);
+        if (coordinates) {
+          fetchRecommendedStations(
+            new google.maps.LatLng(coordinates.lat, coordinates.lng),
+            datetime
+          );
+        } else {
+          throw new Error("No results found for the address");
+        }
+      } catch (error) {
+        console.error("Error geocoding address:", error.message);
+      }
+    }
+  });
+
+  dateInput.addEventListener("change", async function () {
+    const location = locationInput.value;
+    const userInputedDateNew = new Date(this.value);
+    const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
+    console.log(datetime);
+    if (location && datetime) {
+      try {
+        // Use the geocodeAddress function to obtain coordinates
+        const coordinates = await geocodeAddress(location);
+        if (coordinates) {
+          fetchRecommendedStations(
+            new google.maps.LatLng(coordinates.lat, coordinates.lng),
+            datetime
+          );
+        } else {
+          throw new Error("No results found for the address");
+        }
+      } catch (error) {
+        console.error("Error geocoding address:", error.message);
+      }
+    }
+  });
+
+  //END PREDICTION
 });
 
 // THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
