@@ -323,12 +323,11 @@ document.addEventListener("DOMContentLoaded", function () {
     )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>`;
 
     // let weatherDesc = weatherSpecific.weather_description;
-    let weatherDesc = "clear sky";
     let backgroundVideo = document.getElementById("bkg-video");
     let sourceVideo = document.getElementById("src-video");
 
     if (weatherDesc.includes("rain")) {
-      sourceVideo.src = "/videos/raining.mp4";
+      sourceVideo.src = "/videos/raining_v2.mp4";
 
       backgroundVideo.load();
     } else if (weatherDesc.includes("clouds")) {
