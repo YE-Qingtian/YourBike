@@ -143,10 +143,11 @@ def inference(station_id, datetime_str):
         dfX['last_update'] = pd.to_datetime(dfX['last_update'])
         dfX['hour'] = dfX['last_update'].dt.hour
         dfX['day'] = dfX['last_update'].dt.day
+        dfX['day_of_week'] = dfX['last_update'].dt.dayofweek
         dfX['month'] = dfX['last_update'].dt.month
         dfX = dfX.drop(['last_update'], axis=1, inplace=True)
 
-    def get_weather(station_id, datetime_str):
+    def get_infer_weather(station_id, datetime_str):
         def parse_item(item):
             rain = item.get('rain', {'1h': None}).get('1h')
             snow = item.get('snow', {'1h': None}).get('1h')
@@ -181,11 +182,8 @@ def inference(station_id, datetime_str):
 
     model = joblib.load(f"ML/models/{station_id}.joblib")
     X_infer = pd.DataFrame.from_dict(
-        [{"number": station_id, "banking": 0, "last_update": datetime_str} | get_weather(station_id, datetime_str)])
-    featuresList = ["number", "last_update", "banking", "temp", "feels_like", "pressure", "humidity",
-                    "uvi", "clouds", "visibility", "wind_speed", "wind_deg", "wind_gust", "weather_main", "rain",
-                    "snow",
-                    "weather_description"]
+        [{"number": station_id, "banking": 0, "last_update": datetime_str} | get_infer_weather(station_id, datetime_str)])
+    featuresList = ["number","last_update","available_bikes","banking","temp","feels_like","pressure","humidity","uvi","clouds","visibility","wind_speed","wind_gust","weather_main","rain","weather_description"]
     X_infer = X_infer[featuresList]
     addHourDayMonth(X_infer)
     print(f"model: ML/models/{station_id}.joblib \ndatetime_str: {datetime_str} \nmodel: {model} \nX_infer:{X_infer.to_dict()}")
