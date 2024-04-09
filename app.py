@@ -85,13 +85,14 @@ def get_station(station_id):
     seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
                                                                                    microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%a')
-
+    # print(seven_days_ago_start)
     query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000 * seven_days_ago_start.timestamp())}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
     df = pd.DataFrame(data, columns=['number', 'last_update', 'available_bike_stands', 'available_bikes'])
     df['last_update_datetime'] = pd.to_datetime(df['last_update'], unit='ms')
+    df = df[df['last_update_datetime'] > seven_days_ago_start]
     df['day_of_week'] = df['last_update_datetime'].dt.day_name()
     df['time_of_day'] = df['last_update_datetime'].dt.time
     df.set_index('last_update_datetime', inplace=True)
@@ -126,6 +127,7 @@ def get_station(station_id):
     # Render the template with the graph
     graph_json = fig.to_json(pretty=True)
     # Output for debug
+    # graph_html = fig.to_html()
     # return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
     return jsonify(graph_json=json.loads(graph_json))
 
