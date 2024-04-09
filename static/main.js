@@ -276,50 +276,51 @@ const getTheWeatherInformation = async () => {
 document.addEventListener("DOMContentLoaded", function () {
   const weatherValue = document.getElementById("userDate");
   const weatherDiv = document.getElementById("weatherDiv");
+  const currentTimeAndDate = new Date()
+    .toISOString()
+    .slice(0, 16)
+    .replace("T", "_");
+  const temperatureWidget = document.getElementById("temp_widget");
+  weatherValue.value = currentTimeAndDate;
 
-  weatherValue.addEventListener("change", async function () {
-    const userInputedDate = weatherValue.value;
-    // Qingtian, why is your weather foramt with _ and not ISO T ??
-    const final_date = userInputedDate.replace("T", "_");
-    console.log(userInputedDate);
-
-    const currentTimeAndDate = new Date();
-
+  const fetchWeatherInformation = async (date) => {
     try {
-      const response = await fetch(`/weather/${final_date}`);
+      // Fetch weather data for the provided date
+      const response = await fetch(`/weather/${date}`);
       if (!response.ok) {
         throw new Error("Issues with weather Data");
       }
-      let weatherData = await response.json();
+      const weatherData = await response.json();
       console.log(weatherData);
-      showWeatherInfo(weatherData);
+      return weatherData;
     } catch (error) {
-      console.log(error.message);
+      console.error(error.message);
+      throw error; // Rethrow the error to handle it later
     }
-  });
+  };
 
-  let showWeatherInfo = (weatherData) => {
+  const showWeatherInfo = (weatherData) => {
     console.log(weatherData);
+    if (!weatherData || weatherData.length === 0) {
+      console.error("No weather data available");
+      return;
+    }
     const weatherSpecific = weatherData[0];
     const timestamp = weatherSpecific.dt;
     const date = new Date(timestamp * 1000);
-    const dt = date.toUTCString();
+    const dt = date.toISOString().slice(0, 16);
 
     weatherDiv.innerHTML = ` <p id="date_date">Date : ${dt}</p>
-    <p id="temperature">Temperature : ${Math.trunc(
-      weatherSpecific.temp - 273.15
-    )} Celisus</p>
-    <p id="pressure">Pressure : ${weatherSpecific.pressure}</p>
-    <p id=" humidity">Humidity : ${weatherSpecific.humidity}</p>
-    <p id="status">Status : ${weatherSpecific.weather_main}</p>
-    <p id="description">Description : ${
-      weatherSpecific.weather_description
-    }</p>`;
+  <p id="temperature">Temperature : ${Math.trunc(
+    weatherSpecific.temp - 273.15
+  )} Celisus</p>
+  <p id="pressure">Pressure : ${weatherSpecific.pressure}</p>
+  <p id="humidity">Humidity : ${weatherSpecific.humidity}</p>
+  <p id="status">Status : ${weatherSpecific.weather_main}</p>
+  <p id="description">Description : ${weatherSpecific.weather_description}</p>`;
 
-    let temperatureWidget = document.getElementById("temp_widget");
-    console.log(temperatureWidget);
-    temperatureWidget.innerHTML = `${(weatherSpecific.temp - 273.15).toFixed(
-      2
+    temperatureWidget.innerHTML = `${Math.trunc(
+      weatherSpecific.temp - 273.15
     )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>`;
 
     let weatherDesc = weatherSpecific.weather_description;
@@ -330,6 +331,9 @@ document.addEventListener("DOMContentLoaded", function () {
       sourceVideo.src = "/videos/raining_v2.mp4";
 
       backgroundVideo.load();
+      temperatureWidget.innerHTML = `${Math.trunc(
+        weatherSpecific.temp - 273.15
+      )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud-rain"></i>`;
     } else if (weatherDesc.includes("clouds")) {
       sourceVideo.src = "/videos/clouds.mp4";
       backgroundVideo.load();
@@ -337,10 +341,38 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("clear sky");
       sourceVideo.src = "/videos/clear_sky.mp4";
       backgroundVideo.load();
+
+      temperatureWidget.innerHTML = `${Math.trunc(
+        weatherSpecific.temp - 273.15
+      )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud-sun"></i>`;
     } else {
       console.log("Weather condition not handled.");
     }
   };
+  (async () => {
+    try {
+      const weatherData = await fetchWeatherInformation(currentTimeAndDate);
+      showWeatherInfo(weatherData);
+    } catch (error) {
+      console.error(error.message);
+    }
+  })();
+  // Show weather information for the current date when page loads
+  // showWeatherInfo(currentTimeAndDate);
+
+  weatherValue.addEventListener("change", async function () {
+    const userInputedDate = weatherValue.value;
+    const final_date = userInputedDate.replace("T", "_");
+    console.log(userInputedDate);
+    try {
+      // Fetch weather data for the selected date
+      const weatherData = await fetchWeatherInformation(final_date);
+      // Display weather information for the selected date
+      showWeatherInfo(weatherData);
+    } catch (error) {
+      console.error(error.message);
+    }
+  });
 
   //START PREDICTION
   const locationInput = document.getElementById("location2");
@@ -445,7 +477,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           address
-        )}&key=AIzaSyB0I6hTtpc6uQPVy2wcdKz1ezH4b3QfHlI`
+        )}&key=${googleMapApiKey}`
       );
       const data = await response.json();
       if (data.results && data.results.length > 0) {

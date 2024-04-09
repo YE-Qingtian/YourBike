@@ -15,7 +15,8 @@ engine = create_engine(dblink)
 
 @app.route('/')
 def root():
-    return render_template('index.html')
+    google_map_api_key = GoogleMap_api_key
+    return render_template('index.html', google_map_api_key = google_map_api_key)
 
 
 @app.route('/weather/<string:datetime_str>')
