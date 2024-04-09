@@ -78,22 +78,22 @@ async function initMap() {
   } = // check why it is not being used
     await google.maps.importLibrary("maps");
 
-  const customMapStyles = [
-    {
-      featureType: "water",
-      elementType: "geometry",
-      stylers: [{ color: "#49beb7" }],
-    },
-    {
-      featureType: "landscape",
-      elementType: "geometry",
-      stylers: [{ color: "#24d4dd45" }],
-    },
-  ];
+  // const customMapStyles = [
+  //   {
+  //     featureType: "water",
+  //     elementType: "geometry",
+  //     stylers: [{ color: "#49beb7" }],
+  //   },
+  //   {
+  //     featureType: "landscape",
+  //     elementType: "geometry",
+  //     stylers: [{ color: "#24d4dd45" }],
+  //   },
+  // ];
   map = new Map(document.getElementById("map"), {
     zoom: 14,
     center: new google.maps.LatLng(53.34511048273914, -6.267027506499677),
-    styles: customMapStyles, // Apply custom map styles
+    // styles: customMapStyles, // Apply custom map styles
   });
 
   // Add marker for user's current location
@@ -322,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
       2
     )}  &deg; C&nbsp;&nbsp; <i class="fa-solid fa-cloud"></i>`;
 
-    // let weatherDesc = weatherSpecific.weather_description;
+    let weatherDesc = weatherSpecific.weather_description;
     let backgroundVideo = document.getElementById("bkg-video");
     let sourceVideo = document.getElementById("src-video");
 
