@@ -432,27 +432,15 @@ a .btn:hover i:nth-child(3) {
   transition-delay: calc(0.045s * 4);
 }
 
-a .btn:hover i:nth-child(4) {
-  transition-delay: calc(0.045s * 5);
-}
-
-a .btn:hover i:nth-child(6) {
-  transition-delay: calc(0.045s * 6);
-}
-
-a .btn:hover i:nth-child(7) {
-  transition-delay: calc(0.045s * 7);
-}
-
-a .btn:hover i:nth-child(8) {
+a .btn:hover i:nth-child(5) {
   transition-delay: calc(0.045s * 8);
 }
 
-a .btn:hover i:nth-child(9) {
+a .btn:hover i:nth-child(6) {
   transition-delay: calc(0.045s * 9);
 }
 
-a .btn:hover i:nth-child(10) {
+a .btn:hover i:nth-child(7) {
   transition-delay: calc(0.045s * 10);
 }
 

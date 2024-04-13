@@ -1,7 +1,6 @@
 //////////////////////////////////// START COLLAPSIBLE HANDLING FOR ALL COLLAPSIBLE ELEMENTS ////////////////////////////////////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Add event listeners for collapsible headers
   const collapsibleHeaders = document.querySelectorAll(".collapsible-header");
   collapsibleHeaders.forEach(function (header) {
     header.addEventListener("click", function () {
@@ -125,6 +124,7 @@ async function initMap() {
 
   const stationsData = await fetchDataFromDatabase();
   if (stationsData) {
+    let infoWindowStatus = null;
     Object.values(stationsData).forEach((station) => {
       // remeber that JSON data in not an array. that's why I kept getting errors
       const marker_station = new google.maps.Marker({
@@ -145,6 +145,12 @@ async function initMap() {
 
       // Add event listener to marker to open info window when clicked
       marker_station.addListener("click", function () {
+        if (infoWindowStatus) {
+          infoWindowStatus.close();
+        }
+
+        infoWindowStatus = infoWindow;
+
         let stationInfo = document.getElementById("station_info");
         let availableInfo = document.getElementById("avail_info");
 
@@ -237,6 +243,8 @@ async function initMap() {
 
 initMap();
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////// FETCHING WEATHER INFO ALONE FROM SAME STATION ENDPOINT ////////////////////////////////////
 const getTheWeatherInformation = async () => {
   try {
     const response = await fetch("/stations");
@@ -353,7 +361,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  //START PREDICTION
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////////////  START PREDICTION FUNCTIONALITY //////////////////////////////////////////////////////////////
+
   const locationInput = document.getElementById("location2");
   const dateInput = document.getElementById("userDate1");
   const recommendedStations = document.querySelector(".recommended-stations");
@@ -366,7 +377,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Fetch predictions for each nearest station based on the provided datetime
       const predictions = await Promise.all(
-        nearestStations.map((station) => fetchPrediction(station, datetime))
+        nearestStations.map(async (stationId) => {
+          try {
+            // Fetch prediction for each nearest station based on the provided datetime
+            const prediction = await fetchPrediction(stationId, datetime);
+            return prediction;
+          } catch (error) {
+            console.error("Error fetching prediction:", error.message);
+            return { station: stationId, prediction: "N/A" };
+          }
+        })
       );
 
       // Clear previous recommendations
@@ -439,7 +459,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Failed to fetch prediction data.");
       }
-      console.log(`data from fetchPredictions : ${await response.json()}`);
+      console.log("The passed datetime for fetchPredictions is : " + datetime); // testing
+      // console.log(`data from fetchPredictions : ${await response.json()}`);
       return await response.json();
     } catch (error) {
       console.error(
@@ -456,7 +477,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
           address
-        )}&key=${googleMapApiKey}`
+        )}&key=AIzaSyB0I6hTtpc6uQPVy2wcdKz1ezH4b3QfHlI`
       );
       const data = await response.json();
       if (data.results && data.results.length > 0) {
@@ -476,6 +497,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const location = this.value;
     console.log(location);
     const datetime = dateInput.value;
+    console.log(
+      "The time from dateInput is from locationInput listener is : " + datetime
+    );
     if (location && datetime) {
       try {
         // Use the geocodeAddress function to obtain coordinates
@@ -498,7 +522,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const location = locationInput.value;
     const userInputedDateNew = new Date(this.value);
     const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
-    console.log(datetime);
+    console.log(typeof datetime);
     if (location && datetime) {
       try {
         // Use the geocodeAddress function to obtain coordinates
@@ -517,7 +541,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  //END PREDICTION
+  ////////////////////////////////////////////////////////////// END PREDICTION ////////////////////////////////////////////////////////////////////////////////
 });
 
 // THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
