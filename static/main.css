@@ -355,6 +355,8 @@ footer p {
 footer a {
   list-style: none;
 }
+
+/*This button css design was taken from other websites*/
 a .btn {
   display: flex;
   align-items: center;
@@ -487,6 +489,9 @@ a .btn:hover i:nth-child(10) {
     align-items: center;
   }
 
+  #temp_widget {
+    padding: 14px;
+  }
   .navbar img {
     width: 50%;
     margin-bottom: 20px;
@@ -499,8 +504,18 @@ a .btn:hover i:nth-child(10) {
   }
 
   footer {
+    position: relative;
     flex-direction: column;
     align-items: center;
+  }
+  footer img {
+    margin: 10px;
+  }
+  footer a {
+    margin: 10px;
+  }
+  #bkg-video {
+    display: none;
   }
 
   footer p {
