@@ -1,3 +1,5 @@
+//////////////////////////////////// START COLLAPSIBLE HANDLING FOR ALL COLLAPSIBLE ELEMENTS ////////////////////////////////////////////////////////////////////////////
+
 document.addEventListener("DOMContentLoaded", function () {
   // Add event listeners for collapsible headers
   const collapsibleHeaders = document.querySelectorAll(".collapsible-header");
@@ -20,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////// FETCHING STATIONS DATA FROM OUR FLASK ENDPOINT /////////////////////////////////////////////////////////////////////
 const fetchDataFromDatabase = async () => {
   try {
     const response = await fetch("/stations");
@@ -35,47 +39,21 @@ const fetchDataFromDatabase = async () => {
   }
 };
 
-// START PERSONAL TESTING
-
-// async function fetchPrediction(stationId, datetimeStr) {
-//   try {
-//     const response = await fetch(`/inference/${stationId}/${datetimeStr}`);
-//     if (!response.ok) {
-//       throw new Error("Failed to fetch data");
-//     }
-//     const data = await response.json();
-//     console.log(data);
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching prediction:", error);
-//     throw error;
-//   }
-// }
-
-// const stationId = 50; // Replace with the actual station ID
-// const datetimeStr = "2024-04-03T12:00:00Z"; // Replace with the actual datetime string
-// fetchPrediction(stationId, datetimeStr)
-//   .then((prediction) => {
-//     console.log("Prediction:", prediction);
-//     // Do something with the prediction
-//   })
-//   .catch((error) => {
-//     // Handle error
-//   });
-
-// END PERSONAL TESTING
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Call the async function to fetch stationsData when needed
 fetchDataFromDatabase();
 let weatherValue; //the reason I did it here is a global variable access issue, this is the fastest way to I came across
 let map;
 let userLatLng;
+
+/////////////////////////////////////////////////////////// START MAP FUNCTIONALITY AND SERVICES /////////////////////////////////////////////////////////////////////
 async function initMap() {
   const {
     Map,
     DirectionsService,
     DirectionsRenderer,
-  } = // check why it is not being used
+  } = // check why it is not being used ? CHECKED. NEEDED, BUT NOT INVOKED ACCORDING TO MAPS DOCS
     await google.maps.importLibrary("maps");
 
   // const customMapStyles = [
@@ -108,7 +86,7 @@ async function initMap() {
         map: map,
         title: "Your Location",
         icon: {
-          url: "https://toppng.com/uploads/preview/reen-person-icon-transparent-png-green-person-icon-green-person-ico-11563325236gfijwfavym.png",
+          url: "/images/ava_female.png",
           scaledSize: new google.maps.Size(50, 50), // Adjust size as needed
         },
       });
@@ -221,6 +199,7 @@ async function initMap() {
 
   addressInputStart.addEventListener("change", function () {
     calculateAndDisplayRoute();
+    console.log(autocompleteStart);
   });
 
   addressInputDestination.addEventListener("change", function () {
