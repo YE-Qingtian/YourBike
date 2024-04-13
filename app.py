@@ -191,7 +191,7 @@ def inference(station_id, datetime_str):
     addHourDayMonth(X_infer)
     print(f"model: ML/models/{station_id}.joblib \ndatetime_str: {datetime_str} \nmodel: {model} \nX_infer:{X_infer.to_dict()}")
     prediction = model.predict(X_infer)
-    return jsonify(prediction[0])
+    return str(prediction[0])
 
 
 if __name__ == "__main__":

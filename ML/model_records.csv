@@ -1,0 +1,6 @@
+Model Name,MSE,Features Used
+Lasso,132.57690763048768,number weather_main weather_description banking temp feels_like pressure humidity uvi clouds visibility wind_speed wind_deg wind_gust rain snow hour day month
+Lasso,132.57690763048768,number weather_main weather_description banking temp feels_like pressure humidity uvi clouds visibility wind_speed wind_gust rain snow hour day month
+Lasso,121.49225626714197,number weather_main weather_description banking temp feels_like pressure humidity uvi clouds visibility wind_speed wind_gust rain snow hour day month
+LogisticRegression,119.17011498833627,number weather_main weather_description banking temp feels_like pressure humidity uvi clouds visibility wind_speed wind_gust rain hour day day_of_week month
+LogisticRegression,119.17011498833627,number weather_main weather_description banking temp feels_like pressure humidity uvi clouds visibility wind_speed wind_gust rain hour day day_of_week month
