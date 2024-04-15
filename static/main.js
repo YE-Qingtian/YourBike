@@ -381,7 +381,7 @@ document.addEventListener("DOMContentLoaded", function () {
           try {
             // Fetch prediction for each nearest station based on the provided datetime
             const prediction = await fetchPrediction(stationId, datetime);
-            return prediction;
+            return { station: stationId, prediction: Math.floor(prediction)};
           } catch (error) {
             console.error("Error fetching prediction:", error.message);
             return { station: stationId, prediction: "N/A" };
@@ -496,7 +496,7 @@ document.addEventListener("DOMContentLoaded", function () {
   locationInput.addEventListener("change", async function () {
     const location = this.value;
     console.log(location);
-    const datetime = dateInput.value;
+    const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
     console.log(
       "The time from dateInput is from locationInput listener is : " + datetime
     );

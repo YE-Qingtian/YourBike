@@ -137,7 +137,7 @@ def get_station(station_id):
 def inference(station_id, datetime_str):
     """
     :param station_id:
-    :param datetime_str: Using ISO 8601 format.
+    :param datetime_str: Using ISO 8601 format. example. inference/84/2024-04-05T10:30:30Z
     :return:
     """
 
@@ -189,7 +189,7 @@ def inference(station_id, datetime_str):
     featuresList = ["number","last_update","banking","temp","feels_like","pressure","humidity","uvi","clouds","visibility","wind_speed","wind_gust","weather_main","rain","weather_description"]
     X_infer = X_infer[featuresList]
     addHourDayMonth(X_infer)
-    print(f"model: ML/models/{station_id}.joblib \ndatetime_str: {datetime_str} \nmodel: {model} \nX_infer:{X_infer.to_dict()}")
+    print(f"model: ML/models/{station_id}.joblib \ndatetime_str: {datetime_str}")
     prediction = model.predict(X_infer)
     return str(prediction[0])
 
