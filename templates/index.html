@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='main.css') }}" />
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key={{google_map_api_key}}&libraries=places,geometry"></script>
+    <script
+      async
+      src="https://maps.googleapis.com/maps/api/js?key={{google_map_api_key}}&libraries=places,geometry"
+    ></script>
 
     <link
       rel="stylesheet"
