@@ -461,8 +461,10 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error("Failed to fetch prediction data.");
       }
       console.log("The passed datetime for fetchPredictions is : " + datetime); // testing
-      // console.log(`data from fetchPredictions : ${await response.json()}`);
-      return await response.json();
+      let fetchData = await response.json();
+      console.log(`data from fetchPredictions : ${fetchData}`);
+
+      return fetchData;
     } catch (error) {
       console.error(
         `Error fetching prediction for station ${stationId}:`,
