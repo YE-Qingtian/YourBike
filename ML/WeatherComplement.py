@@ -1,5 +1,5 @@
 """
-Unfinished
+Unfinished, intended to scrape weather data to match all bike availability data.
 """
 import pandas as pd
 import requests
