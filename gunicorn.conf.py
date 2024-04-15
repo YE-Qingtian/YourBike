@@ -1,3 +1,2 @@
-workers = 5
-worker_class = "gevent"
+workers = 2
 bind = "127.0.0.1:8000"
