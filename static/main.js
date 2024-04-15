@@ -369,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const dateInput = document.getElementById("userDate1");
   const recommendedStations = document.querySelector(".recommended-stations");
   const isoDate = new Date(dateInput + ":00").toISOString(); // implemented elsewhere
+  const autocomplete2 = new google.maps.places.Autocomplete(locationInput);
 
   const fetchRecommendedStations = async (location, datetime) => {
     try {
@@ -381,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
           try {
             // Fetch prediction for each nearest station based on the provided datetime
             const prediction = await fetchPrediction(stationId, datetime);
-            return { station: stationId, prediction: Math.floor(prediction)};
+            return { station: stationId, prediction: Math.floor(prediction) };
           } catch (error) {
             console.error("Error fetching prediction:", error.message);
             return { station: stationId, prediction: "N/A" };
@@ -522,7 +523,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const location = locationInput.value;
     const userInputedDateNew = new Date(this.value);
     const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
-    console.log(typeof datetime);
+
+    const currentDate = new Date();
+
+    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + 7));
+
+    // console.log(typeof datetime); // for testing purposes
+
+    if (userInputedDateNew > futureDate) {
+      alert("Please Select a Date Within The Next 7 days.");
+      this.value = ""; // this caused me problems, alert box was working, yet wasn't resitting. had to do this.
+      return;
+    }
     if (location && datetime) {
       try {
         // Use the geocodeAddress function to obtain coordinates
