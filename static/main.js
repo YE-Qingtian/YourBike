@@ -533,7 +533,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // console.log(typeof datetime); // for testing purposes
 
     if (userInputedDateNew > futureDate) {
-      alert("Please Select a Date Within The Next 7 days.");
+      alert("Please Select a Date Within The Next 5 days.");
       this.value = ""; // this caused me problems, alert box was working, yet wasn't resitting. had to do this.
       return;
     }
