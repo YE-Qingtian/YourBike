@@ -528,7 +528,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const currentDate = new Date();
 
-    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + 7));
+    const futureDate = new Date(currentDate.setDate(currentDate.getDate() + 5));
 
     // console.log(typeof datetime); // for testing purposes
 
