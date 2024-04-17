@@ -31,7 +31,7 @@ const fetchDataFromDatabase = async () => {
     }
     const stationsData = await response.json();
     // Process the stationsData here
-    console.log(stationsData);
+    // console.log(stationsData);
     return stationsData;
   } catch (error) {
     console.error("Error fetching stationsData:", error.message);
@@ -45,7 +45,7 @@ fetchDataFromDatabase();
 let weatherValue; //the reason I did it here is a global variable access issue, this is the fastest way to I came across
 let map;
 let userLatLng;
-
+let markerForPrediction = {}; // feature added at the very last to point station locations intuitively.
 /////////////////////////////////////////////////////////// START MAP FUNCTIONALITY AND SERVICES /////////////////////////////////////////////////////////////////////
 const autocompleteOptions = {
     componentRestrictions: { country: "ie" },
@@ -121,7 +121,7 @@ async function initMap() {
       fillOpacity: 0.5,
       strokeColor: "red",
       strokeWeight: 0,
-      scale: 15, // Adjust the size of the circle
+      scale: 15, // Qingtian adjust the size of the circle if u want to
     };
   };
 
@@ -137,6 +137,8 @@ async function initMap() {
         clickable: true,
         icon: circleMap(station.available_bikes),
       });
+
+      markerForPrediction[station.number] = marker_station;
       const infoWindow = new google.maps.InfoWindow({
         content: `<div>
         <h3>${station.name}</h3>
@@ -208,7 +210,7 @@ async function initMap() {
 
   addressInputStart.addEventListener("change", function () {
     calculateAndDisplayRoute();
-    console.log(autocompleteStart);
+    // console.log(autocompleteStart);
   });
 
   addressInputDestination.addEventListener("change", function () {
@@ -256,7 +258,7 @@ const getTheWeatherInformation = async () => {
     }
     const stationsData = await response.json();
     // Process the stationsData here
-    console.log(stationsData);
+    // console.log(stationsData);
     return stationsData;
   } catch (error) {
     console.error("Error fetching stationsData:", error.message);
@@ -281,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
         throw new Error("Issues with weather Data");
       }
       const weatherData = await response.json();
-      console.log(weatherData);
+      // console.log(weatherData);
       return weatherData;
     } catch (error) {
       console.error(error.message);
@@ -290,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   const showWeatherInfo = (weatherData) => {
-    console.log(weatherData);
+    // console.log(weatherData);
     if (!weatherData || weatherData.length === 0) {
       console.error("No weather data available");
       return;
@@ -353,7 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
   weatherValue.addEventListener("change", async function () {
     const userInputedDate = weatherValue.value;
     const final_date = userInputedDate.replace("T", "_");
-    console.log(userInputedDate);
+    // console.log(userInputedDate);
     try {
       // Fetch weather data for the selected date
       const weatherData = await fetchWeatherInformation(final_date);
@@ -367,23 +369,45 @@ document.addEventListener("DOMContentLoaded", function () {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////  START PREDICTION FUNCTIONALITY //////////////////////////////////////////////////////////////
-
+  let markers = {};
   const locationInput = document.getElementById("location2");
   const dateInput = document.getElementById("userDate1");
   const recommendedStations = document.querySelector(".recommended-stations");
   const isoDate = new Date(dateInput + ":00").toISOString(); // implemented elsewhere
   const autocomplete2 = new google.maps.places.Autocomplete(locationInput, autocompleteOptions);
 
+  const addMarkersForPredictions = (stationIds) => {
+    stationIds.forEach((stationId) => {
+      const marker = markerForPrediction[stationId];
+      if (marker) {
+        // Set custom property isPrediction to true
+        marker.isPrediction = true;
+      }
+    });
+  };
+
+  const changeColorsForPredictions = (stationIds) => {
+    Object.values(markerForPrediction).forEach((marker) => {
+      if (marker.isPrediction) {
+        marker.setIcon({
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: "blue",
+          fillOpacity: 0.5,
+          strokeColor: "red",
+          strokeWeight: 6,
+          scale: 15,
+        });
+      }
+    });
+  };
+
   const fetchRecommendedStations = async (location, datetime) => {
     try {
-      // Fetch nearest stations based on the provided location
       const nearestStations = await findNearestStations(location);
 
-      // Fetch predictions for each nearest station based on the provided datetime
       const predictions = await Promise.all(
         nearestStations.map(async (stationId) => {
           try {
-            // Fetch prediction for each nearest station based on the provided datetime
             const prediction = await fetchPrediction(stationId, datetime);
             return { station: stationId, prediction: Math.floor(prediction) };
           } catch (error) {
@@ -393,10 +417,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
       );
 
-      // Clear previous recommendations
-      recommendedStations.innerHTML = "";
+      addMarkersForPredictions(
+        predictions.map((prediction) => prediction.station)
+      );
+      changeColorsForPredictions(
+        predictions.map((prediction) => prediction.station)
+      );
 
-      // Display recommendations
+      recommendedStations.innerHTML = ""; // to cleamn the previous recommended stations
+
       predictions.forEach((prediction) => {
         const stationPredictionDiv = document.createElement("div");
         stationPredictionDiv.className = "station-prediction";
@@ -440,7 +469,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         distances.push({ stationId: station.number, distance }); // dont forget, when no key is specified distance : distance => same as distance
       });
-      console.log(distances);
+      // console.log(distances);
       // Sort stations by distance in ascending order
       distances.sort((a, b) => a.distance - b.distance);
 
@@ -463,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!response.ok) {
         throw new Error("Failed to fetch prediction data.");
       }
-      console.log("The passed datetime for fetchPredictions is : " + datetime); // testing
+      // console.log("The passed datetime for fetchPredictions is : " + datetime); // testing
       let fetchData = await response.json();
       console.log(`data from fetchPredictions : ${fetchData}`);
 
@@ -501,11 +530,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Inside the event listener for location input change
   locationInput.addEventListener("change", async function () {
     const location = this.value;
-    console.log(location);
+    // console.log(location);
     const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
-    console.log(
-      "The time from dateInput is from locationInput listener is : " + datetime
-    );
+    // console.log(
+    //   "The time from dateInput is from locationInput listener is : " + datetime
+    // );
     if (location && datetime) {
       try {
         // Use the geocodeAddress function to obtain coordinates
@@ -557,8 +586,27 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
-
-  ////////////////////////////////////////////////////////////// END PREDICTION ////////////////////////////////////////////////////////////////////////////////
 });
+////////////////////////////////////////////////////////////// END PREDICTION ////////////////////////////////////////////////////////////////////////////////
 
-// THE CODE BELOW WILL BE USED TO FETCH THE DATA  FROM THE DATABASE.
+///////////////////////////////////////////////////////////// HANDLING FETCHED PREDICTIONS //////////////////////////////////////////////////////////////////////
+
+//   const markersForPrediction = (stationIds) => {
+//     stationIds.forEach((stationId) => {
+//       const marker = markerForPrediction[stationId];
+//       if (marker) {
+//         marker.setIcon({
+//           path: google.maps.SymbolPath.CIRCLE,
+//           fillColor: "red",
+//           fillOpacity: 0.5,
+//           strokeColor: "blue",
+//           strokeWeight: 3,
+//           scale: 15,
+//         });
+//       }
+//     });
+//   };
+// });
+// Didn't work, try integrating markers inside the fetchPrediction function
+
+///////////////////////////////////////////////////// T   H    E         E      N         D ///////////////////////////////////////////////////////////////////////
