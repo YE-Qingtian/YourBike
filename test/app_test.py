@@ -12,7 +12,6 @@ class TestWeatherApp(unittest.TestCase):
         self.app = app.test_client()
         self.app.testing = True
 
-    @patch('pandas.read_sql_query')
     def test_root_endpoint(self):
         # Test the root endpoint that it returns the index page
         response = self.app.get('/')
