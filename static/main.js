@@ -47,6 +47,9 @@ let map;
 let userLatLng;
 
 /////////////////////////////////////////////////////////// START MAP FUNCTIONALITY AND SERVICES /////////////////////////////////////////////////////////////////////
+const autocompleteOptions = {
+    componentRestrictions: { country: "ie" },
+  };
 async function initMap() {
   const {
     Map,
@@ -197,10 +200,10 @@ async function initMap() {
   const addressInputStart = document.getElementById("location0");
   const addressInputDestination = document.getElementById("location1");
   const autocompleteStart = new google.maps.places.Autocomplete(
-    addressInputStart
+    addressInputStart, autocompleteOptions
   );
   const autocompleteDestination = new google.maps.places.Autocomplete(
-    addressInputDestination
+    addressInputDestination, autocompleteOptions
   );
 
   addressInputStart.addEventListener("change", function () {
@@ -369,7 +372,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const dateInput = document.getElementById("userDate1");
   const recommendedStations = document.querySelector(".recommended-stations");
   const isoDate = new Date(dateInput + ":00").toISOString(); // implemented elsewhere
-  const autocomplete2 = new google.maps.places.Autocomplete(locationInput);
+  const autocomplete2 = new google.maps.places.Autocomplete(locationInput, autocompleteOptions);
 
   const fetchRecommendedStations = async (location, datetime) => {
     try {
