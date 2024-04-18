@@ -63,6 +63,8 @@ header {
 }
 
 .navbar #userDate {
+  visibility: hidden;
+
   width: 15%;
 }
 
