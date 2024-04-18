@@ -127,9 +127,9 @@ def get_station(station_id):
     # Render the template with the graph
     graph_json = fig.to_json(pretty=True)
     # Output for debug
-    graph_html = fig.to_html()
-    return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
-    # return jsonify(graph_json=json.loads(graph_json))
+    # graph_html = fig.to_html()
+    # return render_template("station.html", graph_html=graph_html, tables = [df_resampled.to_html(header="true", table_id="table")])
+    return jsonify(graph_json=json.loads(graph_json))
 
 
 @app.route('/inference/<int:station_id>/<string:datetime_str>')
