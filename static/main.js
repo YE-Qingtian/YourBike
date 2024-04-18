@@ -452,7 +452,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Convert stationsData object to an array of station objects
       const stationArray = Object.values(stationsData);
       const distances = [];
-      console.log(stationArray); // remember, no issues with fetching data, logical error somewhere else.
+      //console.log(stationArray); // remember, no issues with fetching data, logical error somewhere else.
       // Calculate distances from the provided location to each station
       stationArray.forEach((station) => {
         const stationLocation = new google.maps.LatLng(
@@ -491,8 +491,18 @@ document.addEventListener("DOMContentLoaded", function () {
       }
       // console.log("The passed datetime for fetchPredictions is : " + datetime); // testing
       let fetchData = await response.json();
-      console.log(`data from fetchPredictions : ${fetchData}`);
-
+      // console.log(`data from fetchPredictions : ${fetchData}`);
+      const marker = markerForPrediction[stationId];
+      if (marker) {
+        marker.setIcon({
+          path: google.maps.SymbolPath.CIRCLE,
+          fillColor: "blue", // Set marker color based on prediction
+          fillOpacity: 0.5,
+          strokeColor: "red",
+          strokeWeight: 6,
+          scale: 15,
+        });
+      }
       return fetchData;
     } catch (error) {
       console.error(
@@ -524,14 +534,31 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // END CODE FOR GEOCODE ADDRESS
+
+  let predictionMarkers = [];
+
+  // Function to remove existing prediction markers from the map
+  // AGIAN !! THE REASON WE SPENT SO MUCH TIME ON THIS IS BECAUSE IT IS AN OBJECT WITH NESTED OBJECTS INSIDE OF IT ! NOT AN ARRAY .... REMEBER.
+  function removePredictionMarkers() {
+    Object.values(markerForPrediction).forEach((marker) => {
+      if (marker.isPrediction) {
+        marker.setMap(null); // Remove marker from the map
+      }
+    });
+  }
+
   // Inside the event listener for location input change
   locationInput.addEventListener("change", async function () {
+    removePredictionMarkers();
+
     const location = this.value;
     // console.log(location);
+
     const datetime = userInputedDateNew.toISOString().split(".")[0] + "Z";
     // console.log(
     //   "The time from dateInput is from locationInput listener is : " + datetime
     // );
+
     if (location && datetime) {
       try {
         // Use the geocodeAddress function to obtain coordinates
