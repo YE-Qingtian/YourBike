@@ -117,12 +117,12 @@ def get_station(station_id):
     for trace in fig.data:
         if "Now" in trace.name:
             trace.line.width = 5  # Thicker line for the current day
-            trace.line.dash = 'dot'  # Dotted style for the current day
+            trace.line.dash = 'dash'  # Dotted style for the current day
         elif "Last" in trace.name:
             trace.line.width = 3  # Slightly thicker line for the same day last week
-            trace.line.dash = 'longdash'  # Dashed style for the same day last week
+            # trace.line.dash = 'dash'  # Dashed style for the same day last week
         else:
-            trace.line.width = 1  # Default line width for other days
+            trace.line.width = 0.5  # Default line width for other days
 
     # Render the template with the graph
     graph_json = fig.to_json(pretty=True)
