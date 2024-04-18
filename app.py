@@ -86,7 +86,8 @@ def get_station(station_id):
     seven_days_ago_start = (current_datetime - datetime.timedelta(days=7)).replace(hour=0, minute=0, second=0,
                                                                                    microsecond=0)
     same_day_last_week = seven_days_ago_start.strftime('%a')
-    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000 * (seven_days_ago_start.timestamp()-3600))}"
+    # Retrieve more adta from the database in case when there's NAN at beginning of the day.
+    query = f"SELECT * FROM availability WHERE number = {station_id} AND last_update >= {int(1000 * (seven_days_ago_start.timestamp()-10000))}"
     data = pd.read_sql_query(query, engine)
 
     # Data preparation
