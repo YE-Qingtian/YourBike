@@ -1,6 +1,7 @@
 //////////////////////////////////// START COLLAPSIBLE HANDLING FOR ALL COLLAPSIBLE ELEMENTS ////////////////////////////////////////////////////////////////////////////
 
 document.addEventListener("DOMContentLoaded", function () {
+  initMap();
   const collapsibleHeaders = document.querySelectorAll(".collapsible-header");
   collapsibleHeaders.forEach(function (header) {
     header.addEventListener("click", function () {
@@ -51,12 +52,7 @@ const autocompleteOptions = {
     componentRestrictions: { country: "ie" },
   };
 async function initMap() {
-  const {
-    Map,
-    DirectionsService,
-    DirectionsRenderer,
-  } = // check why it is not being used ? CHECKED. NEEDED, BUT NOT INVOKED ACCORDING TO MAPS DOCS
-    await google.maps.importLibrary("maps");
+  const { Map } = await google.maps.importLibrary("maps");
 
   // const customMapStyles = [
   //   {
@@ -373,7 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const dateInput = document.getElementById("userDate1");
   const recommendedStations = document.querySelector(".recommended-stations");
   const isoDate = new Date(dateInput + ":00").toISOString(); // implemented elsewhere
-  const autocomplete2 = new google.maps.places.Autocomplete(locationInput, autocompleteOptions);
+  // const autocomplete2 = new google.maps.places.Autocomplete(locationInput, autocompleteOptions);
 
   const addMarkersForPredictions = (stationIds) => {
     stationIds.forEach((stationId) => {
